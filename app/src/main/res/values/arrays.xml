@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+     <string-array name="chartsTitle">
+	   	<item>折线图(封闭式)</item>
+	   	<item>平滑曲线图</item>
+    </string-array>
+</resources>
