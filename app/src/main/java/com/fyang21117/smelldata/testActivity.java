@@ -61,7 +61,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public static int c4[] = new int[30];
     String hex_str[]=new String[120];
     int dec_num[]=new int[120];
-    public static String[][] smelldata= new String[4][240];
+//    public static String[][] smelldata= new String[4][240];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 bundleSimple.putString("title", chartsTitleCurr[position]);
                 intent.setClass(testActivity.this,ChartsActivity.class);
                 bundleSimple.putInt("selected", position);
-                bundleSimple.putIntArray("c1",c1);
+                bundleSimple.putIntArray("c1",c1);//保存int类型数组，在readRawTxt已经转换类型
                 bundleSimple.putIntArray("c2",c2);
                 bundleSimple.putIntArray("c3",c3);
                 bundleSimple.putIntArray("c4",c4);
@@ -198,33 +198,23 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     public void readRawTxt() {
-
-/*         InputStream input = getResources().openRawResource(R.raw.smelldata2018);
-       Reader reader = new InputStreamReader(input);
-        StringBuffer stringBuffer = new StringBuffer();
-        char b[] = new char[1024];
-        int len = -1;
-        try {
-            while ((len = reader.read(b)) != -1){stringBuffer.append(b);}
-        } catch (IOException e) {Log.e("ReadingFile", "IOException");}
-        String string = stringBuffer.toString();*/
         textView = findViewById(R.id.smeelldata);
         StringBuffer stringBuffer = new StringBuffer();
         StringBuffer sb= new StringBuffer();
-        BufferedReader reader=null;
+        BufferedReader bfReader=null;
         String temp;
         int line=0 ;
 
         try{
             InputStream input = getResources().openRawResource(R.raw.smelldata2018);
-            Reader reader1 = new InputStreamReader(input);
-             reader = new BufferedReader(reader1);
+            Reader reader = new InputStreamReader(input);
+            bfReader = new BufferedReader(reader);
 
-                while((temp=reader.readLine())!=null){
+                while((temp=bfReader.readLine())!=null){
                     temp = temp.replaceAll("12 34 ","");
 //                    stringBuffer.append("r"+line+":"+temp);
-                    String[] str = temp.split(" ");
-                    //for (int i = 0; i < 2; i++) {//
+                    String[] str = temp.split(" ");//str[8]
+                    //for (int i = 0; i < 2; i++) {
                          for (int i = 0; i < str.length; i++){
                         /*c1[i+2*line]=str[i];
                         c2[i+2+2*line]=str[i+2];
@@ -234,17 +224,17 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                         //stringBuffer.append(c1);
                     }
                     line++;
-                    if(line%30==0) {
+                    if(line%30==0) {//一行8个，30组共240byte数据时添加换行
                         stringBuffer.append("\n");
                         //c1[60]= c2[60]= c3[60]= c4[60]="\0";
                         //break;
                     }
                 }
-        }
+            }
         catch(Exception e){e.printStackTrace();}
         finally{
-            if(reader != null){
-                try{reader.close();}
+            if(bfReader != null){
+                try{bfReader.close();}
                 catch(Exception e){e.printStackTrace();}
             }
         }
@@ -252,27 +242,21 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         String []data1 = string.split("\n");
 
         //System.arraycopy(data1,1,smelldata[0],1,10);
-
-//        Toast.makeText(this,String.valueOf(str1.length),Toast.LENGTH_SHORT).show();//44组数据，str1[0].length()每组长度240byte
+        // 44组数据，str1[0].length()每组长度240byte
+        //Toast.makeText(this,String.valueOf(str1.length),Toast.LENGTH_SHORT).show();
         //textView.setText(str1[0]);
-
 /*        for(int j=0;j<10;j++){
             sb.append(data1[8*j]);
             sb.append(data1[1+8*j]);
         }
-        String s1 = sb.toString();
-*/
+        String s1 = sb.toString();*/
         ///smelldata[0][1]=data1[0];
-        textView.setText(data1[0]);
+        textView.setText(data1[0]);//前120个数据显示
 
-
+        /**** k < 240/2=120*****/
         for(int k=0;k<data1[0].length()/2;k++){
             hex_str[k]=data1[0].substring(2*k,2*k+1);
-           // int dataofDec[] = Integer.toOctalString(hex_str[k]);
-            //long dec_num = Long.parseLong(hex_str.n, 16);
-            //String strHex3 = "00001322";
-
-            //将十六进制转化成十进制,120个数
+            //将十六进制字符串转化成十进制int基本类型
             dec_num[k] = Integer.parseInt(hex_str[k],16);
             if(k<40) {
                 c1[k] = dec_num[4 * k];
@@ -280,15 +264,12 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 c3[k] = dec_num[4 * k + 2];
                 c4[k] = dec_num[4 * k + 3];
             }
+            Log.d(TAG, "dec_num:"+dec_num[k]);
         }
         //dataSeries1.add( c1[k]);
         //dataSeries2.add( c2[k]);
         //dataSeries3.add( c3[k]);
         //dataSeries4.add( c4[k]);
-
-        Log.d(TAG, "dec_num:"+dec_num);
     }
-
-
 }
 

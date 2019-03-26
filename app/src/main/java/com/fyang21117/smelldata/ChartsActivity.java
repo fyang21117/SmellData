@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -71,10 +72,10 @@ public class ChartsActivity extends Activity {
 	private int mSelected = 0;
     private DemoView[] mCharts ;
 
-    public static int c1[] = new int[30];
-    public static int c2[] = new int[30];
-    public static int c3[] = new int[30];
-    public static int c4[] = new int[30];
+    int c1[] = new int[30];
+    int c2[] = new int[30];
+    int c3[] = new int[30];
+    int c4[] = new int[30];
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,14 +93,16 @@ public class ChartsActivity extends Activity {
                 new SplineChart03View(this)//平滑曲线图
         };
 
-		Bundle bundle = this.getIntent().getExtras();
-		mSelected = bundle.getInt("selected");
-		String title = bundle.getString("title");
-		c1 = bundle.getIntArray("c1");
-        c2 = bundle.getIntArray("c2");
-        c3 = bundle.getIntArray("c3");
-        c4 = bundle.getIntArray("c4");
-
+        String title = null;
+        try {
+            Bundle bundle = this.getIntent().getExtras();
+            mSelected = bundle.getInt("selected");
+            title = bundle.getString("title");
+            c1 = bundle.getIntArray("c1");
+            c2 = bundle.getIntArray("c2");
+            c3 = bundle.getIntArray("c3");
+            c4 = bundle.getIntArray("c4");
+    } catch (NullPointerException e) {e.printStackTrace();}
 
         if(mSelected > mCharts.length - 1){
 			setContentView(R.layout.activity_charts);
@@ -113,7 +116,7 @@ public class ChartsActivity extends Activity {
 	private void initActivity()
 	{
 			//完全动态创建,无须XML文件.
-	       FrameLayout content = new FrameLayout(this);
+	       FrameLayout framelayout = new FrameLayout(this);
 	       //缩放控件放置在FrameLayout的上层，用于放大缩小图表
 		   FrameLayout.LayoutParams frameParm = new FrameLayout.LayoutParams(
 		   LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);  
@@ -129,8 +132,7 @@ public class ChartsActivity extends Activity {
 		   DisplayMetrics dm = getResources().getDisplayMetrics();		   
 		   int scrWidth = (int) (dm.widthPixels * 0.99);
 		   int scrHeight = (int) (dm.heightPixels * 0.99);
-	       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-	    		   													scrWidth, scrHeight);
+	       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scrWidth, scrHeight);
 	       
 	       //居中显示
            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);   
@@ -140,9 +142,9 @@ public class ChartsActivity extends Activity {
            chartLayout.addView( mCharts[mSelected], layoutParams);
   
 	        //增加控件
-         content.addView(chartLayout);
-		   ((ViewGroup) content).addView(myZoomControls);
-		    setContentView(content);		   	       
+         framelayout.addView(chartLayout);
+		   ((ViewGroup) framelayout).addView(myZoomControls);
+		    setContentView(framelayout);
 		    //放大监听
 		   myZoomControls.setOnZoomInClickListener(new OnZoomInClickListenerImpl());
 		    //缩小监听
