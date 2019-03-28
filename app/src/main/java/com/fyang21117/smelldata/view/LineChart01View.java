@@ -56,6 +56,7 @@ public class LineChart01View extends DemoView {
 	 }
 	 
 	 private void initView() {
+         Log.d(TAG, "*************initView: LineChart01View.java start*************");
 		 	chartLabels();
 			chartDataSet();	
 			chartRender();

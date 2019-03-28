@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,8 @@ import com.fyang21117.smelldata.view.DemoView;
 import com.fyang21117.smelldata.view.LineChart01View;
 import com.fyang21117.smelldata.view.SplineChart03View;
 import com.fyang21117.smelldata.view.event.mZoomControls;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * 关于整个图表缩放的说明 :
@@ -72,15 +75,15 @@ public class ChartsActivity extends Activity {
 	private int mSelected = 0;
     private DemoView[] mCharts ;
 
-    int c1[] = new int[30];
-    int c2[] = new int[30];
-    int c3[] = new int[30];
-    int c4[] = new int[30];
+    public static int c1[] = new int[30];
+    public static int c2[] = new int[30];
+    public static int c3[] = new int[30];
+    public static int c4[] = new int[30];
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+        Log.d(TAG, "*************ChartActivity:  start*************");
         //设置铺满屏幕
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //设置没标题
@@ -119,7 +122,7 @@ public class ChartsActivity extends Activity {
 	       FrameLayout framelayout = new FrameLayout(this);
 	       //缩放控件放置在FrameLayout的上层，用于放大缩小图表
 		   FrameLayout.LayoutParams frameParm = new FrameLayout.LayoutParams(
-		   LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);  
+		   LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);  //LayoutParams(width,height)
 		   frameParm.gravity = Gravity.BOTTOM|Gravity.RIGHT;  
 
 		  //缩放控件放置在FrameLayout的上层，用于放大缩小图表

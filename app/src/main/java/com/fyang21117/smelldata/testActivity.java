@@ -44,6 +44,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.ContentValues.TAG;
+
 public class testActivity extends AppCompatActivity implements OnItemClickListener {
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, testActivity.class);
@@ -78,10 +80,12 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         readRawTxt();
+        Log.e(TAG, "*************ChartActivity: readRawTxt() finish*************");
+
         OnItemClickListener listener = new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent,
-                                    android.view.View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent,android.view.View view, int position, long id) {
+                Log.e(TAG, "*************ChartActivity: listener start*************");
                 String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
                 if(position > chartsTitleCurr.length - 1) return;
 
@@ -204,12 +208,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         BufferedReader bfReader=null;
         String temp;
         int line=0 ;
-
         try{
             InputStream input = getResources().openRawResource(R.raw.smelldata2018);
             Reader reader = new InputStreamReader(input);
             bfReader = new BufferedReader(reader);
-
                 while((temp=bfReader.readLine())!=null){
                     temp = temp.replaceAll("12 34 ","");
 //                    stringBuffer.append("r"+line+":"+temp);
@@ -251,20 +253,25 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         }
         String s1 = sb.toString();*/
         ///smelldata[0][1]=data1[0];
-        textView.setText(data1[0]);//前120个数据显示
+        textView.setText(data1[0]);//前120个数据,240字节
+        Log.e(TAG, "data1[0]:"+data1[0]);
+        Log.e(TAG, "data1[1]:"+data1[1]);
+        Log.e(TAG, "data1[2]:"+data1[2]);
+        Log.e(TAG, "data1[3]:"+data1[3]);
 
-        /**** k < 240/2=120*****/
-        for(int k=0;k<data1[0].length()/2;k++){
-            hex_str[k]=data1[0].substring(2*k,2*k+1);
-            //将十六进制字符串转化成十进制int基本类型
-            dec_num[k] = Integer.parseInt(hex_str[k],16);
+        for(int k=0;k<data1[0].length()/2;k++){//data1[0].length()==120
+            hex_str[k]=data1[0].substring(2*k,2*k+2);
+            Log.e(TAG, "hex_str["+k+"]="+hex_str[k]);
+
+            dec_num[k] = Integer.parseInt(hex_str[k],16);//将十六进制字符串转化成十进制int基本类型
+            Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);
             if(k<40) {
                 c1[k] = dec_num[4 * k];
                 c2[k] = dec_num[4 * k + 1];
                 c3[k] = dec_num[4 * k + 2];
                 c4[k] = dec_num[4 * k + 3];
             }
-            Log.d(TAG, "dec_num:"+dec_num[k]);
+            Log.e(TAG, "dec_num:"+dec_num[k]);
         }
         //dataSeries1.add( c1[k]);
         //dataSeries2.add( c2[k]);
