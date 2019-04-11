@@ -107,7 +107,7 @@ public class ChartsActivity extends Activity {
             c4 = bundle.getIntArray("c4");
     } catch (NullPointerException e) {e.printStackTrace();}
 
-        if(mSelected > mCharts.length - 1){
+        if(mSelected > mCharts.length - 1){//需要改动？？
 			setContentView(R.layout.activity_charts);
 			this.setTitle(Integer.toString(mSelected));
 		}else{
@@ -166,8 +166,7 @@ public class ChartsActivity extends Activity {
 	 @Override
 	    public boolean onOptionsItemSelected(MenuItem item) {
 	        super.onOptionsItemSelected(item);
-	        switch(item.getItemId())
-	        {
+	        switch(item.getItemId()){
 	        case Menu.FIRST+1: 
 	        	//String chartsHelp[] = getResources().getStringArray(R.array.chartsHelp);	        
 	        	//String URL = chartsHelp[mSelected]; 	        	
@@ -196,7 +195,7 @@ public class ChartsActivity extends Activity {
 	        }
 	    }
 
-	    private class OnZoomOutClickListenerImpl implements View.OnClickListener {
+	 private class OnZoomOutClickListenerImpl implements View.OnClickListener {
 	        @Override
 	        public void onClick(View view) {
 	        	//mCharts[mSelected].zoomOut();

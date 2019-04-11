@@ -19,5 +19,5 @@
         android:id="@+id/smeelldata"
         android:layout_width="match_parent"
         android:layout_height="290dp"
-        android:text="" />
+        android:text="smeelldata:" />
  </LinearLayout>

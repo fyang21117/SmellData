@@ -61,8 +61,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public static int c2[] = new int[30];
     public static int c3[] = new int[30];
     public static int c4[] = new int[30];
-    String hex_str[]=new String[120];
-    int dec_num[]=new int[120];
+    String hex_str[] = new String[120];
+    int dec_num[] = new int[120];
+    String string  ;
+    String []data1 ;
 //    public static String[][] smelldata= new String[4][240];
 
     @Override
@@ -74,19 +76,19 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(false);
 
-        dataread();
+        dataRead();
         listView.setOnItemClickListener(testActivity.this);
-        //设置页面横屏
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        readRawTxt();
-        Log.e(TAG, "*************ChartActivity: readRawTxt() finish*************");
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//设置页面横屏
+        Log.e(TAG, "*************testActivity: txtRead() start*************");
+        txtRead();
+        Log.e(TAG, "*************testActivity: txtRead() finish*************");
 
         OnItemClickListener listener = new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent,android.view.View view, int position, long id) {
-                Log.e(TAG, "*************ChartActivity: listener start*************");
-                String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
+                Log.e(TAG, "*************testActivity: listener start*************");
+                 String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
                 if(position > chartsTitleCurr.length - 1) return;
 
                 Bundle bundleSimple = new Bundle();
@@ -94,7 +96,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 bundleSimple.putString("title", chartsTitleCurr[position]);
                 intent.setClass(testActivity.this,ChartsActivity.class);
                 bundleSimple.putInt("selected", position);
-                bundleSimple.putIntArray("c1",c1);//保存int类型数组，在readRawTxt已经转换类型
+                bundleSimple.putIntArray("c1",c1);//保存int类型数组，在txtRead已经转换类型
                 bundleSimple.putIntArray("c2",c2);
                 bundleSimple.putIntArray("c3",c3);
                 bundleSimple.putIntArray("c4",c4);
@@ -104,6 +106,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             }
         };
         listView.setOnItemClickListener(listener);
+        Log.e(TAG, "*************testActivity:onCreate() finish*************");
     }
 
     @Override
@@ -137,7 +140,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         return true;
     }
 
-    private void dataread() {
+    private void dataRead() {
         listView = findViewById(R.id.list_view);
         listView.setDivider(new ColorDrawable(Color.BLACK));
         listView.setDividerHeight(2);
@@ -146,7 +149,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             public void run() {
                 super.run();
                 List<Item> itemList = new ArrayList<>();
-                String path = "http://192.168.11.4/smelldata/smelldata.xml";//http://192.168.10.216/yy_voice/items.xml"
+                String path = "http://yf21117.com/smelldata/items.xml";//http://192.168.10.216/yy_voice/items.xml"
                 HttpURLConnection conn;
                 try {
                     URL url = new URL(path);
@@ -171,8 +174,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                                         } else if ("info".equals(nodeName)) {
                                             info = xmlPullParser.nextText();
                                         }
-                                    }
-                                    break;
+                                    }break;
                                     case XmlPullParser.END_TAG: {
                                         if ("item".equals(nodeName)) {
                                             Item item = new Item();
@@ -180,99 +182,84 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                                             item.setInfo(info);
                                             itemList.add(item);
                                         }
-                                    }
-                                    break;
-                                    default:
-                                        break;
+                                    }break;
+                                    default:break;
                                 }
                                 eventType = xmlPullParser.next();//获取下一个元素
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            } catch (IOException e) {    e.printStackTrace();    }
                         }
                     }
                     listAdapter = new MyAdapter(itemList, testActivity.this);
                     //listAdapter.notifyDataSetChanged();
                     listView.setAdapter(listAdapter);
-                } catch (IOException e) {e.printStackTrace();}
+                }
+                catch (IOException e) {e.printStackTrace();}
                 catch (XmlPullParserException e) {e.printStackTrace();}
                 catch (Exception e) {e.printStackTrace();}
             }
         }.start();
     }
 
-    public void readRawTxt() {
+    public void txtRead() {
         textView = findViewById(R.id.smeelldata);
-        StringBuffer stringBuffer = new StringBuffer();
-        StringBuffer sb= new StringBuffer();
+        StringBuffer strBuffer = new StringBuffer();
+        //StringBuffer sb= new StringBuffer();
         BufferedReader bfReader=null;
         String temp;
         int line=0 ;
+
+        /*读取数据流部分**/
         try{
             InputStream input = getResources().openRawResource(R.raw.smelldata2018);
             Reader reader = new InputStreamReader(input);
             bfReader = new BufferedReader(reader);
-                while((temp=bfReader.readLine())!=null){
+                while((temp=bfReader.readLine()) != null){
                     temp = temp.replaceAll("12 34 ","");
-//                    stringBuffer.append("r"+line+":"+temp);
-                    String[] str = temp.split(" ");//str[8]
-                    //for (int i = 0; i < 2; i++) {
+//                    strBuffer.append("r"+line+":"+temp);
+                    String[] str = temp.split(" ");//4数据8字节
                          for (int i = 0; i < str.length; i++){
-                        /*c1[i+2*line]=str[i];
-                        c2[i+2+2*line]=str[i+2];
-                        c3[i+4+2*line]=str[i+4];
-                        c4[i+6+2*line]=str[i+6];*/
-                         stringBuffer.append(str[i]);
-                        //stringBuffer.append(c1);
+                         strBuffer.append(str[i]);
                     }
                     line++;
-                    if(line%30==0) {//一行8个，30组共240byte数据时添加换行
-                        stringBuffer.append("\n");
-                        //c1[60]= c2[60]= c3[60]= c4[60]="\0";
-                        //break;
+                    if(line%30==0) {//一行4个，8字节，30组，共240byte数据时添加换行
+                        strBuffer.append("\n");
                     }
                 }
             }
         catch(Exception e){e.printStackTrace();}
         finally{
             if(bfReader != null){
-                try{bfReader.close();}
-                catch(Exception e){e.printStackTrace();}
+                try{    bfReader.close();  }
+                catch(Exception e){ e.printStackTrace();    }
             }
         }
-        String string = stringBuffer.toString();
-        String []data1 = string.split("\n");
 
-        //System.arraycopy(data1,1,smelldata[0],1,10);
-        // 44组数据，str1[0].length()每组长度240byte
+        /*数据截取，进制转换，按列集合**/
+        string = strBuffer.toString();
+        data1 = string.split("\n");
+
+        //文件夹44组数据，str1[0].length()每组长度240byte
         //Toast.makeText(this,String.valueOf(str1.length),Toast.LENGTH_SHORT).show();
-        //textView.setText(str1[0]);
-/*        for(int j=0;j<10;j++){
-            sb.append(data1[8*j]);
-            sb.append(data1[1+8*j]);
-        }
-        String s1 = sb.toString();*/
-        ///smelldata[0][1]=data1[0];
         textView.setText(data1[0]);//前120个数据,240字节
         Log.e(TAG, "data1[0]:"+data1[0]);
-        Log.e(TAG, "data1[1]:"+data1[1]);
-        Log.e(TAG, "data1[2]:"+data1[2]);
-        Log.e(TAG, "data1[3]:"+data1[3]);
+//        Log.e(TAG, "data1[1]:"+data1[1]);
+//        Log.e(TAG, "data1[2]:"+data1[2]);
+//        Log.e(TAG, "data1[3]:"+data1[3]);
 
-        for(int k=0;k<data1[0].length()/2;k++){//data1[0].length()==120
+        for(int k=0;k<data1[0].length()/2;k++){//k<120
             hex_str[k]=data1[0].substring(2*k,2*k+2);
-            Log.e(TAG, "hex_str["+k+"]="+hex_str[k]);
-
+//            Log.e(TAG, "hex_str["+k+"]="+hex_str[k]);
             dec_num[k] = Integer.parseInt(hex_str[k],16);//将十六进制字符串转化成十进制int基本类型
-            Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);
-            if(k<40) {
+//            Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);
+        }
+        for(int k = 0;k<30;k++){//k<dec_num.length
                 c1[k] = dec_num[4 * k];
                 c2[k] = dec_num[4 * k + 1];
                 c3[k] = dec_num[4 * k + 2];
                 c4[k] = dec_num[4 * k + 3];
-            }
-            Log.e(TAG, "dec_num:"+dec_num[k]);
+            Log.e(TAG, "c1["+k+"]="+c1[k]);
         }
+        Log.e(TAG, "*************ChartActivity: txtRead() over*************");
         //dataSeries1.add( c1[k]);
         //dataSeries2.add( c2[k]);
         //dataSeries3.add( c3[k]);
