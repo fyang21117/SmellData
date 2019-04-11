@@ -44,7 +44,6 @@ import java.util.List;
 /*
  * @ClassName SplineChart
  * @Description  曲线图基类
- * @author XiongChuanLiang<br/>(xcl_168@aliyun.com)
  *  
  */
 public class SplineChart extends LnChart{

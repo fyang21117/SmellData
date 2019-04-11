@@ -9,7 +9,7 @@ import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-
+import com.fyang21117.smelldata.ChartsActivity;
 import com.fyang21117.smelldata.view.chart.CustomLineData;
 import com.fyang21117.smelldata.view.chart.PointD;
 import com.fyang21117.smelldata.view.chart.SplineChart;
@@ -17,20 +17,21 @@ import com.fyang21117.smelldata.view.chart.SplineData;
 import com.fyang21117.smelldata.view.common.IFormatterTextCallBack;
 import com.fyang21117.smelldata.view.event.click.PointPosition;
 import com.fyang21117.smelldata.view.renderer.XEnum;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class SplineChart03View  extends DemoView {
+
 	//平滑曲线图
 	private String TAG = "SplineChart03View";
 	private SplineChart chart = new SplineChart();
+
 	//分类轴标签集合
 	private LinkedList<String> labels = new LinkedList<>();
 	private LinkedList<SplineData> chartData = new LinkedList<>();
-	
+    public static int SIZE=30;
 	private Paint mPaintTooltips = new Paint(Paint.ANTI_ALIAS_FLAG);
 	
 	//setCategoryAxisCustomLines
@@ -42,12 +43,10 @@ public class SplineChart03View  extends DemoView {
 		super(context);
 		initView();
 	}
-	
 	public SplineChart03View(Context context, AttributeSet attrs){   
 	    super(context, attrs);   
 	    initView();
 	 }
-	 
 	 public SplineChart03View(Context context, AttributeSet attrs, int defStyle) {
 			super(context, attrs, defStyle);
 			initView();
@@ -56,49 +55,37 @@ public class SplineChart03View  extends DemoView {
 	 private void initView()
 	 {
 			chartLabels();
-			chartCustomeLines();
+			//chartCustomeLines();
 			chartDataSet();	
 			chartRender();
-			
-			//綁定手势滑动事件
-			this.bindTouch(this,chart);
+			this.bindTouch(this,chart);//綁定手势滑动事件
 	 }
-	 
-	 
+
 	@Override  
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {  
-	    super.onSizeChanged(w, h, oldw, oldh);  
-	   //图所占范围大小
-	    chart.setChartRange(w,h);
+	    super.onSizeChanged(w, h, oldw, oldh);
+	    chart.setChartRange(w,h);//图所占范围大小
 	}  				
-	
-	
+
 	private void chartRender()
 	{
 		try {
-						
 			//设置绘图区默认缩进px值,留置空间显示Axis,Axistitle....		
 			int [] ltrb = getBarLnDefaultSpadding();
 			chart.setPadding(ltrb[0], ltrb[1], ltrb[2], ltrb[3]);
-			//显示边框
-			chart.showRoundBorder();
-			//数据源	
-			chart.setCategories(labels);
-			chart.setDataSource(chartData);
+			chart.showRoundBorder();//显示边框
+			chart.setCategories(labels);//标签源
+			chart.setDataSource(chartData);//数据源
 
 			//坐标系
-			//数据轴最大值
-			chart.getDataAxis().setAxisMax(100);
+			chart.getDataAxis().setAxisMax(100);//数据轴最大值
 			//chart.getDataAxis().setAxisMin(0);
-			//数据轴刻度间隔
-			chart.getDataAxis().setAxisSteps(10);
+			chart.getDataAxis().setAxisSteps(10);//数据轴刻度间隔
 			chart.setCustomLines(mYCustomLineDataset); //y轴
-
-			//标签轴最大值
-			chart.setCategoryAxisMax(100);	
-			//标签轴最小值
-			chart.setCategoryAxisMin(0);	
-			//chart.setCustomLines(mXCustomLineDataset); //y轴
+            //chart.setCustomLines(mXCustomLineDataset); //x轴
+			chart.setCategoryAxisMax(100);//标签轴最大值
+            //chart.getCategoryAxis().setAxisSteps(10);//标签轴刻度间隔
+			chart.setCategoryAxisMin(0);//标签轴最小值
 			chart.setCategoryAxisCustomLines(mXCustomLineDataset); //x轴
 			
 			//设置图的背景色
@@ -115,10 +102,8 @@ public class SplineChart03View  extends DemoView {
 			//chart.hideRightAxis();				
 			
 			chart.getPlotGrid().getHorizontalLinePaint().setColor(Color.rgb(179, 147, 197));
-			chart.getCategoryAxis().getAxisPaint().setColor( 
-						chart.getPlotGrid().getHorizontalLinePaint().getColor());
-			chart.getCategoryAxis().getAxisPaint().setStrokeWidth(
-					chart.getPlotGrid().getHorizontalLinePaint().getStrokeWidth());
+			chart.getCategoryAxis().getAxisPaint().setColor( chart.getPlotGrid().getHorizontalLinePaint().getColor());
+			chart.getCategoryAxis().getAxisPaint().setStrokeWidth(chart.getPlotGrid().getHorizontalLinePaint().getStrokeWidth());
 
 			//定义交叉点标签显示格式,特别备注,因曲线图的特殊性，所以返回格式为:  x值,y值
 			//请自行分析定制
@@ -129,17 +114,13 @@ public class SplineChart03View  extends DemoView {
 					return (label);
 				}
 			});
-			//标题
-			chart.setTitle("Spline Chart");
-			chart.addSubtitle("(XCL-Charts Demo)");
-			//激活点击监听
-			chart.ActiveListenItemClick();
-			//为了让触发更灵敏，可以扩大5px的点击监听范围
-			chart.extPointClickRange(5);
+
+			chart.setTitle("气体传感器(Gas Sensors)");//标题
+			chart.addSubtitle("(2019.04.14)");
+			chart.ActiveListenItemClick();//激活点击监听
+			chart.extPointClickRange(5);//为了让触发更灵敏，可以扩大5px的点击监听范围
 			chart.showClikedFocus();
-			
-			//显示平滑曲线
-			chart.setCrurveLineStyle(XEnum.CrurveLineStyle.BEZIERCURVE);
+			chart.setCrurveLineStyle(XEnum.CrurveLineStyle.BEZIERCURVE);//显示平滑曲线
 			
 			//图例显示在正下方
 			chart.getPlotLegend().setVerticalAlign(XEnum.VerticalAlign.BOTTOM);
@@ -151,76 +132,64 @@ public class SplineChart03View  extends DemoView {
 	}
 	private void chartDataSet()
 	{
-		//线1的数据集
+		//甲醛的数据集
 		List<PointD> linePoint1 = new ArrayList<>();
-		linePoint1.add(new PointD(5d, 8d));
-		linePoint1.add(new PointD(12d, 12d));
-		linePoint1.add(new PointD(25d, 15d));
-		linePoint1.add(new PointD(30d, 30d));
-		linePoint1.add(new PointD(45d, 25d));
-		linePoint1.add(new PointD(55d, 33d));
-		linePoint1.add(new PointD(62d, 45d));
-		linePoint1.add(new PointD(75d, 43d));
-		linePoint1.add(new PointD(82d, 55d));
-		linePoint1.add(new PointD(90d, 60d));
-		linePoint1.add(new PointD(96d, 68d));
-		SplineData dataSeries1 = new SplineData("线一",linePoint1,
-				Color.rgb(54, 141, 238) );	
-		//把线弄细点
-		dataSeries1.getLinePaint().setStrokeWidth(2);
-		dataSeries1.setLabelVisible(true);	
+        for(int i=0;i<30;i++)
+            linePoint1.add(new PointD(i*4d,(double) ChartsActivity.c1[i]*3));
+		SplineData dataSeries1 = new SplineData("甲醛",linePoint1,Color.rgb(54, 141, 238) );//key,data,color
+		dataSeries1.getLinePaint().setStrokeWidth(5);//线条粗细
+        dataSeries1.setDotStyle(XEnum.DotStyle.RECT);//◇菱形
+        //dataSeries1.setLabelVisible(true);
 		
-		//线2的数据集
+		//MQ137的数据集
 		List<PointD> linePoint2 = new ArrayList<>();
-		linePoint2.add(new PointD(40d, 50d));
-		linePoint2.add(new PointD(55d, 55d));
-		linePoint2.add(new PointD(60d, 65d));
-		linePoint2.add(new PointD(65d, 85d));
-		linePoint2.add(new PointD(72d, 70d));	
-		linePoint2.add(new PointD(85d, 68d));
-		SplineData dataSeries2 = new SplineData("线二",linePoint2,
-				Color.rgb(255, 165, 132) );
+        for(int i=0;i<30;i++)
+            linePoint2.add(new PointD(i*4d,(double) ChartsActivity.c2[i]*3));
+		SplineData dataSeries2 = new SplineData("MQ137",linePoint2,Color.rgb(255, 165, 132) );
+        dataSeries2.getLinePaint().setStrokeWidth(5);
+		dataSeries2.setDotStyle(XEnum.DotStyle.RING);
+		dataSeries2.getDotLabelPaint().setColor(Color.BLACK);
 
-		dataSeries2.setDotStyle(XEnum.DotStyle.RING);				
-		//dataSeries2.getDotLabelPaint().setColor(Color.RED);
-		
-		
-		//线3的数据集
+		//TGS2603的数据集
 		List<PointD> linePoint3 = new ArrayList<>();
-		linePoint3.add(new PointD(30d, 60d));
-		linePoint3.add(new PointD(45d, 65d));
-		linePoint3.add(new PointD(50d, 75d));
-		linePoint3.add(new PointD(65d, 95d));
-		SplineData dataSeries3 = new SplineData("线三",linePoint3,
-				Color.rgb(84, 206, 231) );
-		dataSeries3.setDotStyle(XEnum.DotStyle.RING);		
+        for(int i=0;i<30;i++)
+            linePoint3.add(new PointD(i*4d,(double) ChartsActivity.c3[i]*3));
+		SplineData dataSeries3 = new SplineData("TGS2603",linePoint3,Color.rgb(84, 206, 231) );
+        dataSeries3.getLinePaint().setStrokeWidth(5);
+		dataSeries3.setDotStyle(XEnum.DotStyle.TRIANGLE);
 		dataSeries3.getDotPaint().setColor(Color.rgb(75, 166, 51));
 		dataSeries3.getPlotLine().getPlotDot().setRingInnerColor( Color.rgb(123, 89, 168) );
 
-		//设定数据源		
+		//CO的数据集
+        List<PointD> linePoint4 = new ArrayList<>();
+        for(int i=0;i<30;i++)
+            linePoint4.add(new PointD(i*4d,(double) ChartsActivity.c4[i]*3));
+        SplineData dataSeries4 = new SplineData("CO",linePoint4,Color.rgb(55, 165, 132) );
+        dataSeries4.getLinePaint().setStrokeWidth(5);
+        dataSeries4.setDotStyle(XEnum.DotStyle.PRISMATIC);
+        dataSeries4.getDotPaint().setColor(Color.rgb(75, 66, 51));
+        dataSeries4.getPlotLine().getPlotDot().setRingInnerColor( Color.rgb(23, 89, 68) );
+
+        //设定数据源
 		chartData.add(dataSeries1);				
 		chartData.add(dataSeries2);	
-		chartData.add(dataSeries3);	
-	}
+		chartData.add(dataSeries3);
+        chartData.add(dataSeries4);
+    }
 	
 	private void chartLabels()
 	{
-		labels.add("周一");
-		labels.add("");
-		labels.add("周三");
-		labels.add("");
-		labels.add("周五");
-		labels.add("");
-		labels.add("周日");
+        for(int i = 0; i< SIZE; i++){
+            String str = String.valueOf(i);
+            labels.add(str+"s");
+        }
 	}
 	
-	/**
-	 * 期望线/分界线
-	 */
+	/*** 期望线/分界线*/
 	private void chartCustomeLines()
 	{				
 		CustomLineData cdx1 =new CustomLineData("稍好",30d,Color.rgb(35, 172, 57),5);
-		CustomLineData cdx2 =new CustomLineData("舒适",40d,Color.rgb(69, 181, 248),5);		
+		CustomLineData cdx2 =new CustomLineData("舒适",40d,Color.rgb(69, 181, 248),5);
 		cdx1.setLabelVerticalAlign(XEnum.VerticalAlign.MIDDLE);		
 		mXCustomLineDataset.add(cdx1);
 		mXCustomLineDataset.add(cdx2);	
@@ -238,8 +207,7 @@ public class SplineChart03View  extends DemoView {
 	    	Log.e(TAG, e.toString());
 	    }
 	}
-	
-	
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
@@ -249,8 +217,7 @@ public class SplineChart03View  extends DemoView {
 		}
 		return true;
 	}
-	
-	
+
 	//触发监听
 	private void triggerClick(float x,float y)
 	{

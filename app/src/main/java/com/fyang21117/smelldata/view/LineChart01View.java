@@ -56,7 +56,6 @@ public class LineChart01View extends DemoView {
 	 }
 	 
 	 private void initView() {
-         Log.d(TAG, "*************initView: LineChart01View.java start*************");
 		 	chartLabels();
 			chartDataSet();	
 			chartRender();
@@ -96,7 +95,7 @@ public class LineChart01View extends DemoView {
 			chart.getPlotGrid().getVerticalLinePaint().setColor(Color.BLUE);//垂直蓝色线
 			
 			chart.setTitle("气体传感器(Gas Sensors)");
-			chart.addSubtitle("(2019.03.14)");
+			chart.addSubtitle("(2019.04.14)");
 		//	chart.getAxisTitle().setLowerTitle("(time)");
 
 			chart.ActiveListenItemClick();//激活点击监听
@@ -113,14 +112,11 @@ public class LineChart01View extends DemoView {
 		}
 	}
 	private void chartDataSet()
-	{   //LineData（键值，数据集，线条颜色）
+	{
         //************************Line 1************************
-        for(int i=0;i<30;i++) {
-           // dataSeries1.add(10d + i);
-            //dataSeries1.add(Double.valueOf( testActivity.smelldata[0][i]));
-            dataSeries1.add((double)ChartsActivity.c1[i]);
-        }
-		lineData1 = new LineData("TGS2600",dataSeries1,Color.rgb(234, 83, 71));
+        for(int i=0;i<30;i++)
+            dataSeries1.add((double)ChartsActivity.c1[i]*3);
+		lineData1 = new LineData("甲醛",dataSeries1,Color.rgb(234, 83, 71));
 		lineData1.setDotStyle(XEnum.DotStyle.RECT);	            //方形
 //      lineData1.setLabelVisible(true);		                //显示标签
 		lineData1.getDotLabelPaint().setColor(Color.BLUE);      //标签字体蓝色
@@ -134,12 +130,10 @@ public class LineChart01View extends DemoView {
 
         //************************Line 2************************
         for(int i=0;i<30;i++)
-            dataSeries2.add((double)ChartsActivity.c2[i]);
-
-        //dataSeries2.add(20d+i%6);
-        lineData2 = new LineData("TGS2603",dataSeries2,Color.rgb(75, 166, 51));
+            dataSeries2.add((double)ChartsActivity.c2[i]*3);
+        lineData2 = new LineData("MQ137",dataSeries2,Color.rgb(75, 166, 51));
         lineData2.setDotStyle(XEnum.DotStyle.RING);                 //圆环状
-//         lineData2.setLabelVisible(true);
+//      lineData2.setLabelVisible(true);
         lineData2.getDotLabelPaint().setColor(Color.BLUE);          //标签字体蓝色
         lineData2.getPlotLine().getDotPaint().setColor(Color.BLACK);  //圆环颜色
         lineData2.getPlotLine().getPlotDot().setRingInnerColor(Color.GREEN);//圆环填充颜色
@@ -152,10 +146,8 @@ public class LineChart01View extends DemoView {
 
         //************************Line 3************************
         for(int i=0;i<30;i++)
-            dataSeries3.add((double)ChartsActivity.c3[i]);
-        //dataSeries3.add(40d+i%4);
-
-		lineData3 = new LineData("CO",dataSeries3,Color.rgb(123, 89, 168));
+            dataSeries3.add((double)ChartsActivity.c3[i]*3);
+		lineData3 = new LineData("TGS2603",dataSeries3,Color.rgb(123, 89, 168));
         lineData3.setDotStyle(XEnum.DotStyle.TRIANGLE);             //三角形
 //		lineData3.setDotStyle(XEnum.DotStyle.DOT);                  //实心点
 //      lineData3.setLabelVisible(true);
@@ -168,10 +160,9 @@ public class LineChart01View extends DemoView {
 
 		//************************Line 4************************
 		for(int i=0;i<30;i++)
-            dataSeries4.add((double)ChartsActivity.c4[i]);
-        //dataSeries4.add(50d+i%9);
+            dataSeries4.add((double)ChartsActivity.c4[i]*3);
             SIZE = dataSeries4.size();
-		lineData4 = new LineData("VOC",dataSeries4,Color.rgb(84, 206, 231));
+		lineData4 = new LineData("CO",dataSeries4,Color.rgb(84, 206, 231));
         lineData4.setDotStyle(XEnum.DotStyle.PRISMATIC);            //菱形
 //      lineData4.setLabelVisible(true);
         lineData4.getPlotLine().getPlotDot().setRingInnerColor(Color.BLACK);//圆环填充颜色

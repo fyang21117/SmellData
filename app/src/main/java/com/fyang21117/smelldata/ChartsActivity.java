@@ -83,7 +83,6 @@ public class ChartsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        Log.d(TAG, "*************ChartActivity:  start*************");
         //设置铺满屏幕
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //设置没标题
@@ -107,7 +106,7 @@ public class ChartsActivity extends Activity {
             c4 = bundle.getIntArray("c4");
     } catch (NullPointerException e) {e.printStackTrace();}
 
-        if(mSelected > mCharts.length - 1){//需要改动？？
+        if(mSelected > mCharts.length - 1){
 			setContentView(R.layout.activity_charts);
 			this.setTitle(Integer.toString(mSelected));
 		}else{
@@ -140,18 +139,16 @@ public class ChartsActivity extends Activity {
 	       //居中显示
            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);   
            //图表view放入布局中，也可直接将图表view放入Activity对应的xml文件中
-           final RelativeLayout chartLayout = new RelativeLayout(this);  
-      
+           final RelativeLayout chartLayout = new RelativeLayout(this);
            chartLayout.addView( mCharts[mSelected], layoutParams);
   
 	        //增加控件
          framelayout.addView(chartLayout);
-		   ((ViewGroup) framelayout).addView(myZoomControls);
-		    setContentView(framelayout);
-		    //放大监听
-		   myZoomControls.setOnZoomInClickListener(new OnZoomInClickListenerImpl());
-		    //缩小监听
-		    myZoomControls.setOnZoomOutClickListener(new OnZoomOutClickListenerImpl());
+         framelayout.addView(myZoomControls);
+         setContentView(framelayout);
+
+        myZoomControls.setOnZoomInClickListener(new OnZoomInClickListenerImpl());//放大监听
+        myZoomControls.setOnZoomOutClickListener(new OnZoomOutClickListenerImpl()); //缩小监听
 	}
 
 	@Override

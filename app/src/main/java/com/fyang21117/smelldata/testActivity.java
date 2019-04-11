@@ -64,9 +64,16 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public static int c4[] = new int[30];
     String hex_str[] = new String[120];
     int dec_num[] = new int[120];
-    String string  ;
-    String []data1 ;
-//    public static String[][] smelldata= new String[4][240];
+    String smellstr  ;
+    String []smelldata ;
+    public static int rawId[] = new int[]{
+            R.raw.banana0329,R.raw.oilpaint190327,
+            R.raw.orange0327,R.raw.orange0328,R.raw.orange0329,R.raw.orangepi,
+            R.raw.perfume0327,R.raw.smelldata2018,
+            R.raw.smoke,R.raw.smoke0327
+    };
+    public static int kind=0;
+    //public static String[][] smelldata= new String[4][240];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +85,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             actionBar.setDisplayHomeAsUpEnabled(false);
 
         //dataRead();
-        //listView.setOnItemClickListener(testActivity.this);
         findViewById(R.id.b1).setOnClickListener(testActivity.this);
         findViewById(R.id.b2).setOnClickListener(testActivity.this);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//设置页面横屏
-        Log.e(TAG, "*************testActivity: txtRead() start*************");
         txtRead();
-        Log.e(TAG, "*************testActivity: txtRead() finish*************");
 
 /*        OnItemClickListener listener = new OnItemClickListener() {
             @Override
@@ -108,22 +112,22 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             }
         };*/
        // listView.setOnItemClickListener(listener);
-        Log.e(TAG, "*************testActivity:onCreate() finish*************");
     }
 
     @Override
     public void onClick(View v) {
-        Log.e(TAG, "*************b1 b2 start*************");
         String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
         Bundle bundleSimple = new Bundle();
         Intent intent = new Intent();
         switch (v.getId()){
             case R.id.b1:{
+                Log.e(TAG, "*************折线图LineChart01View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[0]);
                 intent.setClass(testActivity.this,ChartsActivity.class);
                 bundleSimple.putInt("selected", 0);
             }break;
             case R.id.b2:{
+                Log.e(TAG, "*************曲线图SplineChart03View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[1]);
                 intent.setClass(testActivity.this,ChartsActivity.class);
                 bundleSimple.putInt("selected", 1);
@@ -158,8 +162,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case Menu.FIRST + 1:
-                //dastaread();
-                //listAdapter.notifyAll();
+                kind++;
+                if(kind>9)
+                    kind=0;
+                Toast.makeText(this, "当前数据id："+String.valueOf(rawId[kind]), Toast.LENGTH_SHORT).show();
                 break;
             case Menu.FIRST + 2:
                 Toast.makeText(this, "about", Toast.LENGTH_SHORT).show();
@@ -232,8 +238,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public void txtRead() {
         Hexdata = findViewById(R.id.Hexdata);
         Decdata = findViewById(R.id.Decdata);
-        StringBuffer strBuffer = new StringBuffer();
-        StringBuffer dec = new StringBuffer();
+        StringBuffer strBuf = new StringBuffer();
+        StringBuffer decBuf = new StringBuffer();
         //StringBuffer sb= new StringBuffer();
         BufferedReader bfReader=null;
         String temp;
@@ -241,20 +247,19 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
         /*读取数据流部分**/
         try{
-            InputStream input = getResources().openRawResource(R.raw.banana0329);
+            InputStream input = getResources().openRawResource(rawId[kind]);
             Reader reader = new InputStreamReader(input);
             bfReader = new BufferedReader(reader);
                 while((temp=bfReader.readLine()) != null){
                     //temp = temp.replaceAll("12 34 ","");
-//                    strBuffer.append("r"+line+":"+temp);
                     temp = temp.substring(5);
-                    String[] str = temp.split(" ");//4数据8字节
+                    String[] str = temp.split(" ");//每行后四列数据，去掉空格
                          for (int i = 0; i < str.length; i++){
-                         strBuffer.append(str[i]);
+                            strBuf.append(str[i]);
                     }
                     line++;
-                    if(line%30==0) {//一行4个，8字节，30组，共240byte数据时添加换行
-                        strBuffer.append("\n");
+                    if(line%30==0) {//  8字节/行，30行组成一串，共240byte数据时添加换行
+                        strBuf.append("\n");
                     }
                 }
             }
@@ -267,40 +272,31 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         }
 
         /*数据截取，进制转换，按列集合**/
-        string = strBuffer.toString();
-        data1 = string.split("\n");
+        smellstr = strBuf.toString();
+        smelldata = smellstr.split("\n");
 
-        //文件夹44组数据，str1[0].length()每组长度240byte
-        //Toast.makeText(this,String.valueOf(str1.length),Toast.LENGTH_SHORT).show();
-        Hexdata.setText(data1[0]);//前120个数据,240字节
-        Log.e(TAG, "Hexdata data1[0]:"+data1[0]);
-//        Log.e(TAG, "data1[1]:"+data1[1]);
-//        Log.e(TAG, "data1[2]:"+data1[2]);
-//        Log.e(TAG, "data1[3]:"+data1[3]);
+        //smelldata[0].length()每组长度240byte
+        Hexdata.setText(smelldata[0]);//120个十六进制数据
+        Log.e(TAG, "Hexdata smelldata[0]:"+smelldata[0]);
 
-        for(int k=0;k<data1[0].length()/2;k++){//k<120
-            hex_str[k]=data1[0].substring(2*k,2*k+2);
-//            Log.e(TAG, "hex_str["+k+"]="+hex_str[k]);
+        for(int k=0;k<smelldata[0].length()/2;k++){//k<120
+            hex_str[k]=smelldata[0].substring(2*k,2*k+2);
             dec_num[k] = Integer.parseInt(hex_str[k],16);//将十六进制字符串转化成十进制int基本类型
-//            Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);
-            dec.append(dec_num[k]);
+            //Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);//按个输出
+            decBuf.append(dec_num[k]);
         }
 
-        Decdata.setText( dec.toString());//10进制数值
-        Log.e(TAG, "Decdata dec_num[k]:"+dec.toString());
+        Decdata.setText( decBuf.toString());//120个十进制数据
+        Log.e(TAG, "Decdata dec_num[k]:"+decBuf.toString());
 
         for(int k = 0;k<30;k++){//k<dec_num.length
                 c1[k] = dec_num[4 * k];
                 c2[k] = dec_num[4 * k + 1];
                 c3[k] = dec_num[4 * k + 2];
                 c4[k] = dec_num[4 * k + 3];
-            Log.e(TAG, "c1["+k+"]="+c1[k]);
+//            Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
         }
-        Log.e(TAG, "*************ChartActivity: txtRead() over*************");
-        //dataSeries1.add( c1[k]);
-        //dataSeries2.add( c2[k]);
-        //dataSeries3.add( c3[k]);
-        //dataSeries4.add( c4[k]);
+//        Log.e(TAG, "*************ChartActivity: txtRead() over*************");
     }
 }
 
