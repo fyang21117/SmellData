@@ -46,7 +46,7 @@ import java.util.Map;
 
 import static android.content.ContentValues.TAG;
 
-public class testActivity extends AppCompatActivity implements OnItemClickListener {
+public class testActivity extends AppCompatActivity implements OnItemClickListener ,View.OnClickListener{
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, testActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -55,7 +55,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     private static String TAG = testActivity.class.getSimpleName();
     private ListView listView;
     private ListAdapter listAdapter;
-    private EditText textView;
+    private EditText Hexdata;
+    private EditText Decdata;
 
     public static int c1[] = new int[30];
     public static int c2[] = new int[30];
@@ -76,15 +77,16 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(false);
 
-        dataRead();
-        listView.setOnItemClickListener(testActivity.this);
-
+        //dataRead();
+        //listView.setOnItemClickListener(testActivity.this);
+        findViewById(R.id.b1).setOnClickListener(testActivity.this);
+        findViewById(R.id.b2).setOnClickListener(testActivity.this);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//设置页面横屏
         Log.e(TAG, "*************testActivity: txtRead() start*************");
         txtRead();
         Log.e(TAG, "*************testActivity: txtRead() finish*************");
 
-        OnItemClickListener listener = new OnItemClickListener() {
+/*        OnItemClickListener listener = new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent,android.view.View view, int position, long id) {
                 Log.e(TAG, "*************testActivity: listener start*************");
@@ -104,9 +106,36 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 intent.putExtras(bundleSimple);
                 startActivity(intent);
             }
-        };
-        listView.setOnItemClickListener(listener);
+        };*/
+       // listView.setOnItemClickListener(listener);
         Log.e(TAG, "*************testActivity:onCreate() finish*************");
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.e(TAG, "*************b1 b2 start*************");
+        String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
+        Bundle bundleSimple = new Bundle();
+        Intent intent = new Intent();
+        switch (v.getId()){
+            case R.id.b1:{
+                bundleSimple.putString("title", chartsTitleCurr[0]);
+                intent.setClass(testActivity.this,ChartsActivity.class);
+                bundleSimple.putInt("selected", 0);
+            }break;
+            case R.id.b2:{
+                bundleSimple.putString("title", chartsTitleCurr[1]);
+                intent.setClass(testActivity.this,ChartsActivity.class);
+                bundleSimple.putInt("selected", 1);
+            }break;
+            default:break;
+            }
+        bundleSimple.putIntArray("c1",c1);//保存int类型数组，在txtRead已经转换类型
+        bundleSimple.putIntArray("c2",c2);
+        bundleSimple.putIntArray("c3",c3);
+        bundleSimple.putIntArray("c4",c4);
+        intent.putExtras(bundleSimple);
+        startActivity(intent);
     }
 
     @Override
@@ -140,7 +169,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         return true;
     }
 
-    private void dataRead() {
+ /*   private void dataRead() {
         listView = findViewById(R.id.list_view);
         listView.setDivider(new ColorDrawable(Color.BLACK));
         listView.setDividerHeight(2);
@@ -198,11 +227,13 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 catch (Exception e) {e.printStackTrace();}
             }
         }.start();
-    }
+    }*/
 
     public void txtRead() {
-        textView = findViewById(R.id.smeelldata);
+        Hexdata = findViewById(R.id.Hexdata);
+        Decdata = findViewById(R.id.Decdata);
         StringBuffer strBuffer = new StringBuffer();
+        StringBuffer dec = new StringBuffer();
         //StringBuffer sb= new StringBuffer();
         BufferedReader bfReader=null;
         String temp;
@@ -210,12 +241,13 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
         /*读取数据流部分**/
         try{
-            InputStream input = getResources().openRawResource(R.raw.smelldata2018);
+            InputStream input = getResources().openRawResource(R.raw.banana0329);
             Reader reader = new InputStreamReader(input);
             bfReader = new BufferedReader(reader);
                 while((temp=bfReader.readLine()) != null){
-                    temp = temp.replaceAll("12 34 ","");
+                    //temp = temp.replaceAll("12 34 ","");
 //                    strBuffer.append("r"+line+":"+temp);
+                    temp = temp.substring(5);
                     String[] str = temp.split(" ");//4数据8字节
                          for (int i = 0; i < str.length; i++){
                          strBuffer.append(str[i]);
@@ -240,8 +272,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
         //文件夹44组数据，str1[0].length()每组长度240byte
         //Toast.makeText(this,String.valueOf(str1.length),Toast.LENGTH_SHORT).show();
-        textView.setText(data1[0]);//前120个数据,240字节
-        Log.e(TAG, "data1[0]:"+data1[0]);
+        Hexdata.setText(data1[0]);//前120个数据,240字节
+        Log.e(TAG, "Hexdata data1[0]:"+data1[0]);
 //        Log.e(TAG, "data1[1]:"+data1[1]);
 //        Log.e(TAG, "data1[2]:"+data1[2]);
 //        Log.e(TAG, "data1[3]:"+data1[3]);
@@ -251,7 +283,12 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 //            Log.e(TAG, "hex_str["+k+"]="+hex_str[k]);
             dec_num[k] = Integer.parseInt(hex_str[k],16);//将十六进制字符串转化成十进制int基本类型
 //            Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);
+            dec.append(dec_num[k]);
         }
+
+        Decdata.setText( dec.toString());//10进制数值
+        Log.e(TAG, "Decdata dec_num[k]:"+dec.toString());
+
         for(int k = 0;k<30;k++){//k<dec_num.length
                 c1[k] = dec_num[4 * k];
                 c2[k] = dec_num[4 * k + 1];

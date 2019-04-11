@@ -7,17 +7,46 @@
     android:orientation="vertical"
     tools:context="com.fyang21117.smelldata.testActivity">
 
-    <ListView
+<!--    <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal">
-    </ListView>
-
-    <EditText
-        android:id="@+id/smeelldata"
+    </ListView>-->
+    <LinearLayout
+        android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="290dp"
-        android:text="smeelldata:" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/b1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="折线图(封闭式)"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/b2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="平滑曲线图"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+    <EditText
+        android:id="@+id/Hexdata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hexdata:" />
+    <EditText
+        android:id="@+id/Decdata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Decdata:" />
  </LinearLayout>
