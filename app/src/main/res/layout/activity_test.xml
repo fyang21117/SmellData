@@ -39,14 +39,26 @@
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
-    <EditText
-        android:id="@+id/Hexdata"
+
+    <LinearLayout
+        android:id="@+id/dataview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <EditText
+        android:id="@+id/Hexdata"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="Hexdata:" />
     <EditText
         android:id="@+id/Decdata"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
         android:text="Decdata:" />
+    </LinearLayout>
+
  </LinearLayout>

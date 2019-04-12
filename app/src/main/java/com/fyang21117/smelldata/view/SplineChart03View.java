@@ -79,7 +79,7 @@ public class SplineChart03View  extends DemoView {
 
 			//坐标系
 			chart.getDataAxis().setAxisMax(100);//数据轴最大值
-			//chart.getDataAxis().setAxisMin(0);
+			chart.getDataAxis().setAxisMin(0);
 			chart.getDataAxis().setAxisSteps(10);//数据轴刻度间隔
 			chart.setCustomLines(mYCustomLineDataset); //y轴
             //chart.setCustomLines(mXCustomLineDataset); //x轴

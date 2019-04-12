@@ -5,28 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.ZoomControls;
-
 import com.fyang21117.smelldata.view.DemoView;
 import com.fyang21117.smelldata.view.LineChart01View;
 import com.fyang21117.smelldata.view.SplineChart03View;
 import com.fyang21117.smelldata.view.event.mZoomControls;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * 关于整个图表缩放的说明 :
@@ -65,6 +58,7 @@ import static android.content.ContentValues.TAG;
  *
  */
 public class ChartsActivity extends Activity {
+
     public static void actionStart(Context context) {
         Intent intent = new Intent(context,ChartsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -83,12 +77,10 @@ public class ChartsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        //设置铺满屏幕
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //设置没标题
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		//设置横屏
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置铺满屏幕
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//设置没标题
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//设置横屏
 
 		mCharts = new DemoView[]{
 		        new LineChart01View(this),  //折线图(封闭式)
@@ -118,34 +110,32 @@ public class ChartsActivity extends Activity {
 	private void initActivity()
 	{
 			//完全动态创建,无须XML文件.
-	       FrameLayout framelayout = new FrameLayout(this);
-	       //缩放控件放置在FrameLayout的上层，用于放大缩小图表
-		   FrameLayout.LayoutParams frameParm = new FrameLayout.LayoutParams(
-		   LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);  //LayoutParams(width,height)
-		   frameParm.gravity = Gravity.BOTTOM|Gravity.RIGHT;  
+        FrameLayout framelayout = new FrameLayout(this);
+        FrameLayout.LayoutParams frameParm = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);//LayoutParams(width,height)
+        frameParm.gravity = Gravity.BOTTOM|Gravity.RIGHT;
 
-		  //缩放控件放置在FrameLayout的上层，用于放大缩小图表
-	       myZoomControls = new mZoomControls(this);
-	       myZoomControls.setIsZoomInEnabled(true);
-	       myZoomControls.setIsZoomOutEnabled(true);
-		   myZoomControls.setLayoutParams(frameParm);
+		//缩放控件放置在FrameLayout的上层，用于放大缩小图表
+	    myZoomControls = new mZoomControls(this);
+	    myZoomControls.setIsZoomInEnabled(true);
+	    myZoomControls.setIsZoomOutEnabled(true);
+		myZoomControls.setLayoutParams(frameParm);
 		   
-		   //图表显示范围在占屏幕大小的99%的区域内
-		   DisplayMetrics dm = getResources().getDisplayMetrics();		   
-		   int scrWidth = (int) (dm.widthPixels * 0.99);
-		   int scrHeight = (int) (dm.heightPixels * 0.99);
-	       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scrWidth, scrHeight);
+		//图表显示范围在占屏幕大小的99%的区域内
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		int scrWidth = (int) (dm.widthPixels * 0.99);
+		int scrHeight = (int) (dm.heightPixels * 0.99);
+	    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scrWidth, scrHeight);
 	       
-	       //居中显示
-           layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);   
-           //图表view放入布局中，也可直接将图表view放入Activity对应的xml文件中
-           final RelativeLayout chartLayout = new RelativeLayout(this);
-           chartLayout.addView( mCharts[mSelected], layoutParams);
+	    //居中显示
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+        //图表view放入布局中，也可直接将图表view放入Activity对应的xml文件中
+        final RelativeLayout chartLayout = new RelativeLayout(this);
+        chartLayout.addView( mCharts[mSelected], layoutParams);
   
-	        //增加控件
-         framelayout.addView(chartLayout);
-         framelayout.addView(myZoomControls);
-         setContentView(framelayout);
+	    //增加控件
+        framelayout.addView(chartLayout);
+        framelayout.addView(myZoomControls);
+        setContentView(framelayout);
 
         myZoomControls.setOnZoomInClickListener(new OnZoomInClickListenerImpl());//放大监听
         myZoomControls.setOnZoomOutClickListener(new OnZoomOutClickListenerImpl()); //缩小监听

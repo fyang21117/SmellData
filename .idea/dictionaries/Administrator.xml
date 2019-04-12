@@ -4,6 +4,7 @@
       <w>decdata</w>
       <w>hexdata</w>
       <w>smelldata</w>
+      <w>smellstr</w>
     </words>
   </dictionary>
 </component>

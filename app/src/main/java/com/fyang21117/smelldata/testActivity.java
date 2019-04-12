@@ -1,50 +1,24 @@
 package com.fyang21117.smelldata;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.fyang21117.smelldata.view.Item;
-import com.fyang21117.smelldata.view.MyAdapter;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static android.content.ContentValues.TAG;
 
 public class testActivity extends AppCompatActivity implements OnItemClickListener ,View.OnClickListener{
     public static void actionStart(Context context) {
@@ -55,8 +29,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     private static String TAG = testActivity.class.getSimpleName();
     private ListView listView;
     private ListAdapter listAdapter;
-    private EditText Hexdata;
-    private EditText Decdata;
+    EditText Hexdata;
+    EditText Decdata;
 
     public static int c1[] = new int[30];
     public static int c2[] = new int[30];
@@ -87,31 +61,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         //dataRead();
         findViewById(R.id.b1).setOnClickListener(testActivity.this);
         findViewById(R.id.b2).setOnClickListener(testActivity.this);
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//设置页面横屏
         txtRead();
-
-/*        OnItemClickListener listener = new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent,android.view.View view, int position, long id) {
-                Log.e(TAG, "*************testActivity: listener start*************");
-                 String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
-                if(position > chartsTitleCurr.length - 1) return;
-
-                Bundle bundleSimple = new Bundle();
-                Intent intent = new Intent();
-                bundleSimple.putString("title", chartsTitleCurr[position]);
-                intent.setClass(testActivity.this,ChartsActivity.class);
-                bundleSimple.putInt("selected", position);
-                bundleSimple.putIntArray("c1",c1);//保存int类型数组，在txtRead已经转换类型
-                bundleSimple.putIntArray("c2",c2);
-                bundleSimple.putIntArray("c3",c3);
-                bundleSimple.putIntArray("c4",c4);
-
-                intent.putExtras(bundleSimple);
-                startActivity(intent);
-            }
-        };*/
-       // listView.setOnItemClickListener(listener);
     }
 
     @Override
@@ -133,7 +83,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 bundleSimple.putInt("selected", 1);
             }break;
             default:break;
-            }
+        }
         bundleSimple.putIntArray("c1",c1);//保存int类型数组，在txtRead已经转换类型
         bundleSimple.putIntArray("c2",c2);
         bundleSimple.putIntArray("c3",c3);
@@ -144,7 +94,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        //Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu);
         menu.add(Menu.NONE, Menu.FIRST + 1, 0, "刷新");
         menu.add(Menu.NONE, Menu.FIRST + 2, 0, "关于");
@@ -165,6 +115,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 kind++;
                 if(kind>9)
                     kind=0;
+                //testActivity.actionStart(this);
                 Toast.makeText(this, "当前数据id："+String.valueOf(rawId[kind]), Toast.LENGTH_SHORT).show();
                 break;
             case Menu.FIRST + 2:
@@ -239,6 +190,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         Hexdata = findViewById(R.id.Hexdata);
         Decdata = findViewById(R.id.Decdata);
         StringBuffer strBuf = new StringBuffer();
+        StringBuffer hexBuf = new StringBuffer();
         StringBuffer decBuf = new StringBuffer();
         //StringBuffer sb= new StringBuffer();
         BufferedReader bfReader=null;
@@ -252,18 +204,16 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             bfReader = new BufferedReader(reader);
                 while((temp=bfReader.readLine()) != null){
                     //temp = temp.replaceAll("12 34 ","");
-                    temp = temp.substring(5);
+                    temp = temp.substring(6);
                     String[] str = temp.split(" ");//每行后四列数据，去掉空格
-                         for (int i = 0; i < str.length; i++){
+                    for (int i = 0; i < str.length; i++){
                             strBuf.append(str[i]);
-                    }
-                    line++;
+                    }line++;
                     if(line%30==0) {//  8字节/行，30行组成一串，共240byte数据时添加换行
                         strBuf.append("\n");
                     }
                 }
-            }
-        catch(Exception e){e.printStackTrace();}
+            }catch(Exception e){e.printStackTrace();}
         finally{
             if(bfReader != null){
                 try{    bfReader.close();  }
@@ -275,28 +225,30 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         smellstr = strBuf.toString();
         smelldata = smellstr.split("\n");
 
-        //smelldata[0].length()每组长度240byte
-        Hexdata.setText(smelldata[0]);//120个十六进制数据
-        Log.e(TAG, "Hexdata smelldata[0]:"+smelldata[0]);
-
         for(int k=0;k<smelldata[0].length()/2;k++){//k<120
-            hex_str[k]=smelldata[0].substring(2*k,2*k+2);
+            hex_str[k] = smelldata[0].substring(2*k,2*k+2);
             dec_num[k] = Integer.parseInt(hex_str[k],16);//将十六进制字符串转化成十进制int基本类型
-            //Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);//按个输出
-            decBuf.append(dec_num[k]);
-        }
+            hexBuf.append(hex_str[k]);
 
+            if(dec_num[k]<10)
+                decBuf.append("\t");
+            decBuf.append(dec_num[k]);
+            decBuf.append("\t");
+
+            if((k+1)%4==0) {
+                decBuf.append("\n");
+                hexBuf.append("\n");
+            }//Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);//按个输出
+        }
+        Hexdata.setText(hexBuf.toString());//120个十六进制数据
         Decdata.setText( decBuf.toString());//120个十进制数据
-        Log.e(TAG, "Decdata dec_num[k]:"+decBuf.toString());
 
         for(int k = 0;k<30;k++){//k<dec_num.length
                 c1[k] = dec_num[4 * k];
                 c2[k] = dec_num[4 * k + 1];
                 c3[k] = dec_num[4 * k + 2];
                 c4[k] = dec_num[4 * k + 3];
-//            Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
+                //Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
         }
-//        Log.e(TAG, "*************ChartActivity: txtRead() over*************");
     }
 }
-
