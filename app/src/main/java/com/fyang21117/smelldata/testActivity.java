@@ -15,39 +15,39 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class testActivity extends AppCompatActivity implements OnItemClickListener ,View.OnClickListener{
+public class testActivity extends AppCompatActivity implements OnItemClickListener, View.OnClickListener {
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, testActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
     }
-    private static String TAG = testActivity.class.getSimpleName();
-    private ListView listView;
-    private ListAdapter listAdapter;
-    EditText Hexdata;
-    EditText Decdata;
 
-    public static int c1[] = new int[30];
-    public static int c2[] = new int[30];
-    public static int c3[] = new int[30];
-    public static int c4[] = new int[30];
-    String hex_str[] = new String[120];
-    int dec_num[] = new int[120];
-    String smellstr  ;
-    String []smelldata ;
-    public static int rawId[] = new int[]{
-            R.raw.banana0329,R.raw.oilpaint190327,
-            R.raw.orange0327,R.raw.orange0328,R.raw.orange0329,R.raw.orangepi,
-            R.raw.perfume0327,R.raw.smelldata2018,
-            R.raw.smoke,R.raw.smoke0327
+    private static String TAG = testActivity.class.getSimpleName();
+
+
+    public        int      kind      = 0;
+    public static int      c1[]      = new int[30];
+    public static int      c2[]      = new int[30];
+    public static int      c3[]      = new int[30];
+    public static int      c4[]      = new int[30];
+    public        String   hex_str[] = new String[120];
+    public        int      dec_num[] = new int[120];
+    public        String   smellstr;
+    public        String[] smelldata;
+    public        EditText Hexdata;
+    public        EditText Decdata;
+    public static int      rawId[]   = new int[]{
+            R.raw.smoke,
+            R.raw.banana0329, R.raw.oilpaint190327,
+            R.raw.orange0327, R.raw.orange0329, R.raw.orangepi,
+            R.raw.perfume0327, R.raw.smelldata2018
     };
-    public static int kind=0;
-    //public static String[][] smelldata= new String[4][240];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,32 +69,34 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         String chartsTitleCurr[] = getResources().getStringArray(R.array.chartsTitle);
         Bundle bundleSimple = new Bundle();
         Intent intent = new Intent();
-        switch (v.getId()){
-            case R.id.b1:{
+        switch (v.getId()) {
+            case R.id.b1: {
                 Log.e(TAG, "*************折线图LineChart01View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[0]);
-                intent.setClass(testActivity.this,ChartsActivity.class);
+                intent.setClass(testActivity.this, ChartsActivity.class);
                 bundleSimple.putInt("selected", 0);
-            }break;
-            case R.id.b2:{
+            }
+            break;
+            case R.id.b2: {
                 Log.e(TAG, "*************曲线图SplineChart03View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[1]);
-                intent.setClass(testActivity.this,ChartsActivity.class);
+                intent.setClass(testActivity.this, ChartsActivity.class);
                 bundleSimple.putInt("selected", 1);
-            }break;
-            default:break;
+            }
+            break;
+            default:
+                break;
         }
-        bundleSimple.putIntArray("c1",c1);//保存int类型数组，在txtRead已经转换类型
-        bundleSimple.putIntArray("c2",c2);
-        bundleSimple.putIntArray("c3",c3);
-        bundleSimple.putIntArray("c4",c4);
+        bundleSimple.putIntArray("c1", c1);//保存int类型数组，在txtRead已经转换类型
+        bundleSimple.putIntArray("c2", c2);
+        bundleSimple.putIntArray("c3", c3);
+        bundleSimple.putIntArray("c4", c4);
         intent.putExtras(bundleSimple);
         startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu);
         menu.add(Menu.NONE, Menu.FIRST + 1, 0, "刷新");
         menu.add(Menu.NONE, Menu.FIRST + 2, 0, "关于");
@@ -111,13 +113,14 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
-            case Menu.FIRST + 1:
+            case Menu.FIRST + 1: {
                 kind++;
-                if(kind>9)
-                    kind=0;
-                //testActivity.actionStart(this);
-                Toast.makeText(this, "当前数据id："+String.valueOf(rawId[kind]), Toast.LENGTH_SHORT).show();
-                break;
+                if (kind > 7)
+                    kind = 0;
+                txtRead();
+                Toast.makeText(this, "当前数据id：" + String.valueOf(rawId[kind]), Toast.LENGTH_SHORT).show();
+            }
+            break;
             case Menu.FIRST + 2:
                 Toast.makeText(this, "about", Toast.LENGTH_SHORT).show();
                 break;
@@ -126,7 +129,78 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         return true;
     }
 
- /*   private void dataRead() {
+    public void txtRead() {
+        Hexdata = findViewById(R.id.Hexdata);
+        Decdata = findViewById(R.id.Decdata);
+        StringBuffer strBuf = new StringBuffer();
+        StringBuffer hexBuf = new StringBuffer();
+        StringBuffer decBuf = new StringBuffer();
+        BufferedReader bfReader = null;
+        String temp;
+        int line = 0;
+
+        /*读取数据流部分**/
+        try {
+            InputStream input = getResources().openRawResource(rawId[kind]);
+            Reader reader = new InputStreamReader(input);
+            bfReader = new BufferedReader(reader);
+            while ((temp = bfReader.readLine()) != null) {
+                //temp = temp.replaceAll("12 34 ","");
+                temp = temp.substring(6);//从第6位开始截取到最后
+                String[] str = temp.split(" ");//每行后四列数据，去掉空格
+                for (int i = 0; i < str.length; i++)
+                    strBuf.append(str[i]);
+                line++;
+                if (line % 30 == 0) // 30行* 8字节，共240byte数据时添加换行
+                    strBuf.append("\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /*数据截取，进制转换，按列集合**/
+        smellstr = strBuf.toString();
+        smelldata = smellstr.split("\n");
+
+        for (int k = 0; k < smelldata[0].length() / 2; k++) {//k<120
+            hex_str[k] = smelldata[0].substring(2 * k, 2 * k + 2);
+            dec_num[k] = Integer.parseInt(hex_str[k], 16);//将十六进制字符串转化成十进制int基本类型
+            hexBuf.append(hex_str[k]);
+
+            if (dec_num[k] < 10)
+                decBuf.append("\t");
+            decBuf.append(dec_num[k]);
+            decBuf.append("\t");
+
+            if ((k + 1) % 4 == 0) {
+                decBuf.append("\n");
+                hexBuf.append("\n");
+            }//Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);//按个输出
+        }
+        Hexdata.setText(hexBuf.toString());//120个十六进制数据
+        Decdata.setText(decBuf.toString());//120个十进制数据
+
+        for (int k = 0; k < 30; k++) {//k<dec_num.length
+            c1[k] = dec_num[4 * k];
+            c2[k] = dec_num[4 * k + 1];
+            c3[k] = dec_num[4 * k + 2];
+            c4[k] = dec_num[4 * k + 3];
+            //Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
+        }
+    }
+}
+
+ /*     private ListView listView;
+    private ListAdapter listAdapter;
+   private void dataRead() {
         listView = findViewById(R.id.list_view);
         listView.setDivider(new ColorDrawable(Color.BLACK));
         listView.setDividerHeight(2);
@@ -185,70 +259,3 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             }
         }.start();
     }*/
-
-    public void txtRead() {
-        Hexdata = findViewById(R.id.Hexdata);
-        Decdata = findViewById(R.id.Decdata);
-        StringBuffer strBuf = new StringBuffer();
-        StringBuffer hexBuf = new StringBuffer();
-        StringBuffer decBuf = new StringBuffer();
-        //StringBuffer sb= new StringBuffer();
-        BufferedReader bfReader=null;
-        String temp;
-        int line=0 ;
-
-        /*读取数据流部分**/
-        try{
-            InputStream input = getResources().openRawResource(rawId[kind]);
-            Reader reader = new InputStreamReader(input);
-            bfReader = new BufferedReader(reader);
-                while((temp=bfReader.readLine()) != null){
-                    //temp = temp.replaceAll("12 34 ","");
-                    temp = temp.substring(6);
-                    String[] str = temp.split(" ");//每行后四列数据，去掉空格
-                    for (int i = 0; i < str.length; i++){
-                            strBuf.append(str[i]);
-                    }line++;
-                    if(line%30==0) {//  8字节/行，30行组成一串，共240byte数据时添加换行
-                        strBuf.append("\n");
-                    }
-                }
-            }catch(Exception e){e.printStackTrace();}
-        finally{
-            if(bfReader != null){
-                try{    bfReader.close();  }
-                catch(Exception e){ e.printStackTrace();    }
-            }
-        }
-
-        /*数据截取，进制转换，按列集合**/
-        smellstr = strBuf.toString();
-        smelldata = smellstr.split("\n");
-
-        for(int k=0;k<smelldata[0].length()/2;k++){//k<120
-            hex_str[k] = smelldata[0].substring(2*k,2*k+2);
-            dec_num[k] = Integer.parseInt(hex_str[k],16);//将十六进制字符串转化成十进制int基本类型
-            hexBuf.append(hex_str[k]);
-
-            if(dec_num[k]<10)
-                decBuf.append("\t");
-            decBuf.append(dec_num[k]);
-            decBuf.append("\t");
-
-            if((k+1)%4==0) {
-                decBuf.append("\n");
-                hexBuf.append("\n");
-            }//Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);//按个输出
-        }
-        Hexdata.setText(hexBuf.toString());//120个十六进制数据
-        Decdata.setText( decBuf.toString());//120个十进制数据
-
-        for(int k = 0;k<30;k++){//k<dec_num.length
-                c1[k] = dec_num[4 * k];
-                c2[k] = dec_num[4 * k + 1];
-                c3[k] = dec_num[4 * k + 2];
-                c4[k] = dec_num[4 * k + 3];
-                //Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
-        }
-    }
-}
