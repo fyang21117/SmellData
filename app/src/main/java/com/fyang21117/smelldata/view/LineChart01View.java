@@ -18,6 +18,11 @@ import com.fyang21117.smelldata.view.event.click.PointPosition;
 import com.fyang21117.smelldata.view.renderer.XEnum;
 import java.util.LinkedList;
 
+import static com.fyang21117.smelldata.testActivity.max;
+import static com.fyang21117.smelldata.testActivity.c1;
+import static com.fyang21117.smelldata.testActivity.c2;
+import static com.fyang21117.smelldata.testActivity.c3;
+import static com.fyang21117.smelldata.testActivity.c4;
 
 public class LineChart01View extends DemoView {
 	//折线图（封闭式）
@@ -39,6 +44,7 @@ public class LineChart01View extends DemoView {
     LinkedList<Double> dataSeries4= new LinkedList<>();
     public static int SIZE;
 
+
     //图片线条（通用）的抗锯齿需要另外设置：
 	private Paint mPaintTooltips = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -59,8 +65,12 @@ public class LineChart01View extends DemoView {
 		 	chartLabels();
 			chartDataSet();	
 			chartRender();
+
 			//綁定手势滑动事件
 			this.bindTouch(this,chart);
+
+            chart.disableScale();//禁止缩放
+            chart.enablePanMode();//激活平移
 	 }
 
 	@Override  
@@ -70,7 +80,8 @@ public class LineChart01View extends DemoView {
     }  
 
 	private void chartRender() {
-		try {				
+		try {
+
 			//设置绘图区默认缩进px值,留置空间显示Axis,Axistitle....
 			int [] ltrb = getBarLnDefaultSpadding();
 			chart.setPadding(ltrb[0], ltrb[1], ltrb[2], ltrb[3]);
@@ -81,8 +92,8 @@ public class LineChart01View extends DemoView {
 			chart.showRoundBorder();//显示边框
 			chart.setCategories(labels);//设定数据源
 			chart.setDataSource(chartData);
-			chart.getDataAxis().setAxisMax(100);//数据轴最大值
-			chart.getDataAxis().setAxisSteps(10);//数据轴刻度间隔
+			chart.getDataAxis().setAxisMax(max);//数据轴最大值
+			chart.getDataAxis().setAxisSteps(max/10);//数据轴刻度间隔
 
 			chart.getPlotGrid().showHorizontalLines();//背景网格
 			//chart.getPlotGrid().showVerticalLines();
@@ -111,11 +122,12 @@ public class LineChart01View extends DemoView {
 			Log.e(TAG, e.toString());
 		}
 	}
+
 	private void chartDataSet()
 	{
         //************************Line 1************************
         for(int i=0;i<30;i++)
-            dataSeries1.add((double)ChartsActivity.c1[i]*3);
+            dataSeries1.add((double)c1[i]);
 		lineData1 = new LineData("甲醛",dataSeries1,Color.rgb(234, 83, 71));
 		lineData1.setDotStyle(XEnum.DotStyle.RECT);	            //方形
 //      lineData1.setLabelVisible(true);		                //显示标签
@@ -130,7 +142,7 @@ public class LineChart01View extends DemoView {
 
         //************************Line 2************************
         for(int i=0;i<30;i++)
-            dataSeries2.add((double)ChartsActivity.c2[i]*3);
+            dataSeries2.add((double)c2[i]);
         lineData2 = new LineData("MQ137",dataSeries2,Color.rgb(75, 166, 51));
         lineData2.setDotStyle(XEnum.DotStyle.RING);                 //圆环状
 //      lineData2.setLabelVisible(true);
@@ -146,7 +158,7 @@ public class LineChart01View extends DemoView {
 
         //************************Line 3************************
         for(int i=0;i<30;i++)
-            dataSeries3.add((double)ChartsActivity.c3[i]*3);
+            dataSeries3.add((double)c3[i]);
 		lineData3 = new LineData("TGS2603",dataSeries3,Color.rgb(123, 89, 168));
         lineData3.setDotStyle(XEnum.DotStyle.TRIANGLE);             //三角形
 //		lineData3.setDotStyle(XEnum.DotStyle.DOT);                  //实心点
@@ -160,7 +172,7 @@ public class LineChart01View extends DemoView {
 
 		//************************Line 4************************
 		for(int i=0;i<30;i++)
-            dataSeries4.add((double)ChartsActivity.c4[i]*3);
+            dataSeries4.add((double)c4[i]);
             SIZE = dataSeries4.size();
 		lineData4 = new LineData("CO",dataSeries4,Color.rgb(84, 206, 231));
         lineData4.setDotStyle(XEnum.DotStyle.PRISMATIC);            //菱形

@@ -72,12 +72,17 @@ public class ChartsActivity extends Activity {
     public static int c2[] = new int[30];
     public static int c3[] = new int[30];
     public static int c4[] = new int[30];
+    public static int max;
+
+    private FrameLayout                 framelayout;
+    private RelativeLayout.LayoutParams layoutParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置铺满屏幕
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置铺满屏幕
         requestWindowFeature(Window.FEATURE_NO_TITLE);//设置没标题
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//设置横屏
 
@@ -95,6 +100,7 @@ public class ChartsActivity extends Activity {
             c2 = bundle.getIntArray("c2");
             c3 = bundle.getIntArray("c3");
             c4 = bundle.getIntArray("c4");
+            max = bundle.getInt("max");
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -110,8 +116,10 @@ public class ChartsActivity extends Activity {
 
     private void initActivity() {
         //完全动态创建,无须XML文件.
-        FrameLayout framelayout = new FrameLayout(this);
-        FrameLayout.LayoutParams frameParm = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);//LayoutParams(width,height)
+        framelayout = new FrameLayout(this);
+        FrameLayout.LayoutParams frameParm =
+                new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT);//LayoutParams(width,height)
         frameParm.gravity = Gravity.BOTTOM | Gravity.RIGHT;
 
         //缩放控件放置在FrameLayout的上层，用于放大缩小图表
@@ -124,7 +132,7 @@ public class ChartsActivity extends Activity {
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int scrWidth = (int) (dm.widthPixels * 0.99);
         int scrHeight = (int) (dm.heightPixels * 0.99);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scrWidth, scrHeight);
+        layoutParams = new RelativeLayout.LayoutParams(scrWidth, scrHeight);
 
         //居中显示
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
@@ -155,19 +163,9 @@ public class ChartsActivity extends Activity {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case Menu.FIRST + 1:
-                //String chartsHelp[] = getResources().getStringArray(R.array.chartsHelp);
-                //String URL = chartsHelp[mSelected];
-/*	        	String URL =getResources().getString(R.string.hello_world);
-		        Uri uri = Uri.parse(URL);  
-		        Intent intent2 = new Intent(Intent.ACTION_VIEW, uri);  
-		        startActivity(intent2);  
-		        finish();*/
                 Toast.makeText(this, "帮助", Toast.LENGTH_SHORT).show();
                 break;
             case Menu.FIRST + 2:
-                //Intent intent = new Intent();
-                //intent.setClass(ChartsActivity.this,testActivity.class);
-                //startActivity(intent);
                 Toast.makeText(this, "返回", Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -177,7 +175,7 @@ public class ChartsActivity extends Activity {
     private class OnZoomInClickListenerImpl implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            //mCharts[mSelected].zoomIn();
+            // mCharts[mSelected].zoomIn();
             Toast.makeText(ChartsActivity.this, "努力缩小中", Toast.LENGTH_SHORT).show();
         }
     }

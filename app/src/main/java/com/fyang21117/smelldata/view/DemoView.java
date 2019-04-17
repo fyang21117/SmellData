@@ -9,7 +9,7 @@ import com.fyang21117.smelldata.view.common.DensityUtil;
  * @Description  各个例子view的view基类
  */
 public class DemoView extends ChartView{
-	public DemoView(Context context) {
+	 public DemoView(Context context) {
 		super(context);
 	}
 	 public DemoView(Context context, AttributeSet attrs){   

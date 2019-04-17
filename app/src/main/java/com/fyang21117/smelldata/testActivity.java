@@ -2,6 +2,7 @@ package com.fyang21117.smelldata;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +22,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class testActivity extends AppCompatActivity implements OnItemClickListener, View.OnClickListener {
+public class testActivity extends AppCompatActivity implements OnItemClickListener,
+        View.OnClickListener {
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, testActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -30,12 +32,15 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
     private static String TAG = testActivity.class.getSimpleName();
 
+    public static int kind;
+    public static int c1[] = new int[30];
+    public static int c2[] = new int[30];
+    public static int c3[] = new int[30];
+    public static int c4[] = new int[30];
 
-    public        int      kind      = 0;
-    public static int      c1[]      = new int[30];
-    public static int      c2[]      = new int[30];
-    public static int      c3[]      = new int[30];
-    public static int      c4[]      = new int[30];
+    public static int min1, min2, min3, min4;
+    public static int max;
+
     public        String   hex_str[] = new String[120];
     public        int      dec_num[] = new int[120];
     public        String   smellstr;
@@ -44,10 +49,14 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public        EditText Decdata;
     public static int      rawId[]   = new int[]{
             R.raw.smoke,
+            R.raw.perfume0327, R.raw.smelldata2018,
             R.raw.banana0329, R.raw.oilpaint190327,
-            R.raw.orange0327, R.raw.orange0329, R.raw.orangepi,
-            R.raw.perfume0327, R.raw.smelldata2018
+            R.raw.orange0327, R.raw.orange0329, R.raw.orangepi
     };
+
+    //存储数据
+    public SharedPreferences.Editor editor;
+    public SharedPreferences        sPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +67,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(false);
 
-        //dataRead();
         findViewById(R.id.b1).setOnClickListener(testActivity.this);
         findViewById(R.id.b2).setOnClickListener(testActivity.this);
         txtRead();
+        //dataRead();
     }
 
     @Override
@@ -91,6 +100,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         bundleSimple.putIntArray("c2", c2);
         bundleSimple.putIntArray("c3", c3);
         bundleSimple.putIntArray("c4", c4);
+        bundleSimple.putInt("max", max);
         intent.putExtras(bundleSimple);
         startActivity(intent);
     }
@@ -117,6 +127,12 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 kind++;
                 if (kind > 7)
                     kind = 0;
+
+                //存储到SharePreferences
+                editor = getSharedPreferences("smelldata", MODE_PRIVATE).edit();
+                editor.putInt("kind", kind);
+                editor.apply();
+
                 txtRead();
                 Toast.makeText(this, "当前数据id：" + String.valueOf(rawId[kind]), Toast.LENGTH_SHORT).show();
             }
@@ -137,11 +153,14 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         StringBuffer decBuf = new StringBuffer();
         BufferedReader bfReader = null;
         String temp;
-        int line = 0;
+        int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
+
+        sPref = getSharedPreferences("smelldata", MODE_PRIVATE);
+        int num = sPref.getInt("kind", 0);
 
         /*读取数据流部分**/
         try {
-            InputStream input = getResources().openRawResource(rawId[kind]);
+            InputStream input = getResources().openRawResource(rawId[num]);
             Reader reader = new InputStreamReader(input);
             bfReader = new BufferedReader(reader);
             while ((temp = bfReader.readLine()) != null) {
@@ -195,6 +214,22 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             c4[k] = dec_num[4 * k + 3];
             //Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
         }
+
+        for (int i = 0; i < 29; i++) {
+            //寻找最大值，确定坐标轴最大坐标
+            max1 = getMax(max1, c1[i]);
+            max2 = getMax(max2, c2[i]);
+            max3 = getMax(max3, c3[i]);
+            max4 = getMax(max4, c4[i]);
+        }
+        max = getMax(getMax(getMax(max1, max2), max3), max4);
+    }
+
+    private int getMax(int a, int b) {
+        if (a < b)
+            return b;
+        else
+            return a;
     }
 }
 
@@ -209,7 +244,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             public void run() {
                 super.run();
                 List<Item> itemList = new ArrayList<>();
-                String path = "http://yf21117.com/smelldata/items.xml";//http://192.168.10.216/yy_voice/items.xml"
+                String path = "http://yf21117.com/smelldata/items.xml";//http://192.168.10
+                .216/yy_voice/items.xml"
                 HttpURLConnection conn;
                 try {
                     URL url = new URL(path);
