@@ -1,9 +1,12 @@
 package com.fyang21117.smelldata;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,9 +21,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class testActivity extends AppCompatActivity implements OnItemClickListener,
         View.OnClickListener {
@@ -41,19 +52,34 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public static int min1, min2, min3, min4;
     public static int max;
 
-    public        String   hex_str[] = new String[120];
-    public        int      dec_num[] = new int[120];
-    public        String   smellstr;
-    public        String[] smelldata;
-    public        EditText Hexdata;
-    public        EditText Decdata;
-    public static int      rawId[]   = new int[]{
-            R.raw.smoke,
-            R.raw.perfume0327, R.raw.smelldata2018,
-            R.raw.banana0329, R.raw.oilpaint190327,
-            R.raw.orange0327, R.raw.orange0329, R.raw.orangepi
+    public              String         hex_str[] = new String[120];
+    public              int            dec_num[] = new int[120];
+    public              String         smellstr;
+    public              String[]       smelldata;
+    public static       EditText       Hexdata;
+    public static       EditText       Decdata;
+    private static      StringBuffer   strBuf    = new StringBuffer();
+    private static      StringBuffer   hexBuf    = new StringBuffer();
+    private static      StringBuffer   decBuf    = new StringBuffer();
+    public static final int            UPDATE    = 1;
+    private             BufferedReader bfReader;
+    private             String         temp;
+    int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
+    int num;
+    public static int rawId[] = new int[]{R.raw.smoke, R.raw.perfume0327, R.raw.smelldata2018,
+            R.raw.banana0329, R.raw.oilpaint190327, R.raw.orange0327, R.raw.orange0329,
+            R.raw.orangepi};
+    public static String dataUrl[] = new String[]{
+            "http://192.168.10.226/smelldata/smoke.txt",
+            "http://192.168.10.226/smelldata/smelldata2018.txt",
+            "http://192.168.10.226/smelldata/perfume0327.txt",
+            "http://192.168.10.226/smelldata/orangepi.txt",
+            "http://192.168.10.226/smelldata/orange0329.txt",
+            "http://192.168.10.226/smelldata/orange0327.txt",
+            "http://192.168.10.226/smelldata/banana0329.txt",
+            "http://192.168.10.226/smelldata/oilpaint190327.txt"
     };
-
+    public static String path;
     //存储数据
     public SharedPreferences.Editor editor;
     public SharedPreferences        sPref;
@@ -64,13 +90,13 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         setContentView(R.layout.activity_test);
         setTitle("气味数据显示");
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(false);
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(false);
 
         findViewById(R.id.b1).setOnClickListener(testActivity.this);
         findViewById(R.id.b2).setOnClickListener(testActivity.this);
+        Hexdata = findViewById(R.id.Hexdata);
+        Decdata = findViewById(R.id.Decdata);
         txtRead();
-        //dataRead();
     }
 
     @Override
@@ -124,17 +150,13 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case Menu.FIRST + 1: {
-                kind++;
-                if (kind > 7)
-                    kind = 0;
-
                 //存储到SharePreferences
                 editor = getSharedPreferences("smelldata", MODE_PRIVATE).edit();
                 editor.putInt("kind", kind);
                 editor.apply();
 
                 txtRead();
-                Toast.makeText(this, "当前数据id：" + String.valueOf(rawId[kind]), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "当前数据path：" + dataUrl[kind], Toast.LENGTH_SHORT).show();
             }
             break;
             case Menu.FIRST + 2:
@@ -146,152 +168,133 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     public void txtRead() {
-        Hexdata = findViewById(R.id.Hexdata);
-        Decdata = findViewById(R.id.Decdata);
-        StringBuffer strBuf = new StringBuffer();
-        StringBuffer hexBuf = new StringBuffer();
-        StringBuffer decBuf = new StringBuffer();
-        BufferedReader bfReader = null;
-        String temp;
-        int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
-
         sPref = getSharedPreferences("smelldata", MODE_PRIVATE);
-        int num = sPref.getInt("kind", 0);
-
+        num = sPref.getInt("kind", 0);
         /*读取数据流部分**/
-        try {
-            InputStream input = getResources().openRawResource(rawId[num]);
-            Reader reader = new InputStreamReader(input);
-            bfReader = new BufferedReader(reader);
-            while ((temp = bfReader.readLine()) != null) {
-                //temp = temp.replaceAll("12 34 ","");
-                temp = temp.substring(6);//从第6位开始截取到最后
-                String[] str = temp.split(" ");//每行后四列数据，去掉空格
-                for (int i = 0; i < str.length; i++)
-                    strBuf.append(str[i]);
-                line++;
-                if (line % 30 == 0) // 30行* 8字节，共240byte数据时添加换行
-                    strBuf.append("\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (bfReader != null) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                 try {
-                    bfReader.close();
+                    Toast.makeText(testActivity.this,String.valueOf(kind),Toast.LENGTH_SHORT).show();
+                    path = dataUrl[kind++];
+                    if(kind>7)kind=0;
+                    HttpURLConnection conn;
+                    URL url = new URL(path);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setDoOutput(false);
+                    conn.setDoInput(true);
+                    conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(8000);
+                    conn.setReadTimeout(8000);
+                    conn.setRequestProperty("Content-type", "application/json");
+                    conn.setInstanceFollowRedirects(false);
+                    //必须设置false，否则会自动redirect到重定向后的地址
+                    conn.connect();
+                    if (conn.getResponseCode() == 200) {
+                        //InputStream input = getResources().openRawResource(rawId[num]);
+                        //Reader reader = new InputStreamReader(input);
+                        //bfReader = new BufferedReader(reader);
+
+                        InputStream is = conn.getInputStream();
+                        if (is != null) {
+                            Reader reader = new InputStreamReader(is);
+                            bfReader = new BufferedReader(reader);
+                        }
+
+                        while ((temp = bfReader.readLine()) != null) {
+                            //temp = temp.replaceAll("12 34 ","");
+                            temp = temp.substring(6);//从第6位开始截取到最后
+                            String[] str = temp.split(" ");//每行后四列数据，去掉空格
+                            for (int i = 0; i < str.length; i++)
+                                strBuf.append(str[i]);
+                            line++;
+                            if (line % 30 == 0) // 30行* 8字节，共240byte数据时添加换行
+                                strBuf.append("\n");
+                        }is.close();
+                        //Log.e(TAG, "strBuf.toString():" + strBuf.toString());
+                    } else Log.e(TAG, "conn.getResponseCode() != 200 ");
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    if (bfReader != null) {
+                        try {
+                            bfReader.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+
+                /*数据截取，进制转换，按列集合**/
+                smellstr = strBuf.toString();
+                smelldata = smellstr.split("\n");
+                for (int k = 0; k < smelldata[0].length() / 2; k++) {//k<120
+                    hex_str[k] = smelldata[0].substring(2 * k, 2 * k + 2);
+                    dec_num[k] = Integer.parseInt(hex_str[k], 16);//将十六进制字符串转化成十进制int基本类型
+                    hexBuf.append(hex_str[k]);
+
+                    if (dec_num[k] < 10) decBuf.append("\t");
+                    decBuf.append(dec_num[k]);
+                    decBuf.append("\t");
+
+                    if ((k + 1) % 4 == 0) {
+                        decBuf.append("\n");
+                        hexBuf.append("\n");
+                    }Log.e(TAG, "dec_num[" + k + "]=" + dec_num[k]);//按个输出
+                }
+
+                for (int k = 0; k < 30; k++) {//k<dec_num.length
+                    c1[k] = dec_num[4 * k];
+                    c2[k] = dec_num[4 * k + 1];
+                    c3[k] = dec_num[4 * k + 2];
+                    c4[k] = dec_num[4 * k + 3];
+                    max1 = getMax(max1, c1[k]);
+                    max2 = getMax(max2, c2[k]);
+                    max3 = getMax(max3, c3[k]);
+                    max4 = getMax(max4, c4[k]);
+                    //Log.e(TAG, "c1[" + k + "]=" + c1[k]);//按列输出
+                }max = getMax(getMax(getMax(max1, max2), max3), max4);
+
+                //使用handler更新主线程UI
+                Message message = new Message();
+                message.what = UPDATE;
+                message.obj = hexBuf;
+                mHandler.sendMessage(message);
+                Message message2 = new Message();
+                message2.what = UPDATE;
+                message2.obj = decBuf;
+                mHandler.sendMessage(message2);
             }
-        }
-
-        /*数据截取，进制转换，按列集合**/
-        smellstr = strBuf.toString();
-        smelldata = smellstr.split("\n");
-
-        for (int k = 0; k < smelldata[0].length() / 2; k++) {//k<120
-            hex_str[k] = smelldata[0].substring(2 * k, 2 * k + 2);
-            dec_num[k] = Integer.parseInt(hex_str[k], 16);//将十六进制字符串转化成十进制int基本类型
-            hexBuf.append(hex_str[k]);
-
-            if (dec_num[k] < 10)
-                decBuf.append("\t");
-            decBuf.append(dec_num[k]);
-            decBuf.append("\t");
-
-            if ((k + 1) % 4 == 0) {
-                decBuf.append("\n");
-                hexBuf.append("\n");
-            }//Log.e(TAG, "dec_num["+k+"]="+dec_num[k]);//按个输出
-        }
-        Hexdata.setText(hexBuf.toString());//120个十六进制数据
-        Decdata.setText(decBuf.toString());//120个十进制数据
-
-        for (int k = 0; k < 30; k++) {//k<dec_num.length
-            c1[k] = dec_num[4 * k];
-            c2[k] = dec_num[4 * k + 1];
-            c3[k] = dec_num[4 * k + 2];
-            c4[k] = dec_num[4 * k + 3];
-            //Log.e(TAG, "c1["+k+"]="+c1[k]);//按列输出
-        }
-
-        for (int i = 0; i < 29; i++) {
-            //寻找最大值，确定坐标轴最大坐标
-            max1 = getMax(max1, c1[i]);
-            max2 = getMax(max2, c2[i]);
-            max3 = getMax(max3, c3[i]);
-            max4 = getMax(max4, c4[i]);
-        }
-        max = getMax(getMax(getMax(max1, max2), max3), max4);
+        }).start();
+        ///Hexdata.setText(hexBuf.toString());//120个十六进制数据
+        //Decdata.setText(decBuf.toString());//120个十进制数据
     }
 
     private int getMax(int a, int b) {
-        if (a < b)
-            return b;
-        else
-            return a;
+        if (a < b) return b;
+        else return a;
     }
-}
 
- /*     private ListView listView;
-    private ListAdapter listAdapter;
-   private void dataRead() {
-        listView = findViewById(R.id.list_view);
-        listView.setDivider(new ColorDrawable(Color.BLACK));
-        listView.setDividerHeight(2);
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                List<Item> itemList = new ArrayList<>();
-                String path = "http://yf21117.com/smelldata/items.xml";//http://192.168.10
-                .216/yy_voice/items.xml"
-                HttpURLConnection conn;
-                try {
-                    URL url = new URL(path);
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-                    conn.setConnectTimeout(5000);
-                    conn.setReadTimeout(5000);
-                    if (conn.getResponseCode() == 200) {//客户端请求成功
-                        InputStream is = conn.getInputStream();
-                        XmlPullParser xmlPullParser = Xml.newPullParser();//获取解析器
-                        xmlPullParser.setInput(is, "utf-8");//设置输入流和编码
-                        int eventType = xmlPullParser.getEventType();//解析器的事件类型
-                        String name = "";
-                        String info = "";
-                        while (eventType != XmlPullParser.END_DOCUMENT) {
-                            String nodeName = xmlPullParser.getName();
-                            try {
-                                switch (eventType) {
-                                    case XmlPullParser.START_TAG: {
-                                        if ("name".equals(nodeName)) {
-                                            name = xmlPullParser.nextText();
-                                        } else if ("info".equals(nodeName)) {
-                                            info = xmlPullParser.nextText();
-                                        }
-                                    }break;
-                                    case XmlPullParser.END_TAG: {
-                                        if ("item".equals(nodeName)) {
-                                            Item item = new Item();
-                                            item.setName(name);
-                                            item.setInfo(info);
-                                            itemList.add(item);
-                                        }
-                                    }break;
-                                    default:break;
-                                }
-                                eventType = xmlPullParser.next();//获取下一个元素
-                            } catch (IOException e) {    e.printStackTrace();    }
-                        }
-                    }
-                    listAdapter = new MyAdapter(itemList, testActivity.this);
-                    //listAdapter.notifyDataSetChanged();
-                    listView.setAdapter(listAdapter);
-                }
-                catch (IOException e) {e.printStackTrace();}
-                catch (XmlPullParserException e) {e.printStackTrace();}
-                catch (Exception e) {e.printStackTrace();}
+    //将 Handler 声明为静态内部类。并持有外部类的弱引用
+    private static class MyHandler extends Handler {
+        private final WeakReference<testActivity> mActivity;
+        public MyHandler(testActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            testActivity activity = mActivity.get();
+            if (activity != null) switch (msg.what) {
+                case UPDATE:
+                    Hexdata.setText(hexBuf.toString());//120个十六进制数据
+                    Decdata.setText(decBuf.toString());//120个十进制数据
+
+                    break;
+                default:
+                    break;
             }
-        }.start();
-    }*/
+        }
+    }
+    private final MyHandler mHandler = new MyHandler(this);
+}
