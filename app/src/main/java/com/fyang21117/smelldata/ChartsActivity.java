@@ -185,7 +185,8 @@ public class ChartsActivity extends Activity {
         public void onClick(View view) {
             //mCharts[mSelected].zoomOut();
             //Toast.makeText(ChartsActivity.this,"努力放大中",Toast.LENGTH_SHORT).show();
-            testActivity.actionStart(ChartsActivity.this);
+            //testActivity.actionStart(ChartsActivity.this);
+            finish();
         }
     }
 }

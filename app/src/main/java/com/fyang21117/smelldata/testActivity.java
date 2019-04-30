@@ -66,23 +66,25 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     private             String         temp;
     int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
     int num;
-    public static int rawId[] = new int[]{R.raw.smoke, R.raw.perfume0327, R.raw.smelldata2018,
+    public static int                      rawId[]   = new int[]{R.raw.smoke, R.raw.perfume0327,
+            R.raw.smelldata2018,
             R.raw.banana0329, R.raw.oilpaint190327, R.raw.orange0327, R.raw.orange0329,
             R.raw.orangepi};
-    public static String dataUrl[] = new String[]{
-            "http://192.168.10.226/smelldata/smoke.txt",
+    public static String                   dataUrl[] = new String[]{
+
             "http://192.168.10.226/smelldata/smelldata2018.txt",
             "http://192.168.10.226/smelldata/perfume0327.txt",
+            "http://192.168.10.226/smelldata/smoke.txt",
             "http://192.168.10.226/smelldata/orangepi.txt",
             "http://192.168.10.226/smelldata/orange0329.txt",
             "http://192.168.10.226/smelldata/orange0327.txt",
             "http://192.168.10.226/smelldata/banana0329.txt",
             "http://192.168.10.226/smelldata/oilpaint190327.txt"
     };
-    public static String path;
+    public static String                   path;
     //存储数据
-    public SharedPreferences.Editor editor;
-    public SharedPreferences        sPref;
+    public        SharedPreferences.Editor editor;
+    public        SharedPreferences        sPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,12 +153,31 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         switch (item.getItemId()) {
             case Menu.FIRST + 1: {
                 //存储到SharePreferences
+                kind++;
+                if (kind > 7) kind = 0;
                 editor = getSharedPreferences("smelldata", MODE_PRIVATE).edit();
                 editor.putInt("kind", kind);
                 editor.apply();
 
-                txtRead();
-                //Toast.makeText(this, "当前数据path：" + dataUrl[kind], Toast.LENGTH_SHORT).show();
+                //txtRead();
+                Toast.makeText(this, "当前数据path：" + dataUrl[kind], Toast.LENGTH_SHORT).show();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        //使用handler更新主线程UI
+                        Log.i(TAG, "sendMessage**********");
+                        Message message = new Message();
+                        message.what = UPDATE;
+                        message.obj = hexBuf;
+                        mHandler.sendMessage(message);
+                        Message message2 = new Message();
+                        message2.what = UPDATE;
+                        message2.obj = decBuf;
+                        mHandler2.sendMessage(message2);
+                    }
+                }).start();
             }
             break;
             case Menu.FIRST + 2:
@@ -175,9 +196,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             @Override
             public void run() {
                 try {
-                    Toast.makeText(testActivity.this,String.valueOf(kind),Toast.LENGTH_SHORT).show();
-                    path = dataUrl[kind++];
-                    if(kind>7)kind=0;
+                    path = dataUrl[num];
+                    Log.i(TAG, "path:" + path);
+                    Log.i(TAG, "num:" + num);
+
                     HttpURLConnection conn;
                     URL url = new URL(path);
                     conn = (HttpURLConnection) url.openConnection();
@@ -190,28 +212,24 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                     conn.setInstanceFollowRedirects(false);
                     //必须设置false，否则会自动redirect到重定向后的地址
                     conn.connect();
+                    Log.i(TAG, "conn.connect();**********");
                     if (conn.getResponseCode() == 200) {
                         //InputStream input = getResources().openRawResource(rawId[num]);
-                        //Reader reader = new InputStreamReader(input);
-                        //bfReader = new BufferedReader(reader);
+                        Log.i(TAG, "conn.getResponseCode() == 200**********");
 
                         InputStream is = conn.getInputStream();
-                        if (is != null) {
-                            Reader reader = new InputStreamReader(is);
-                            bfReader = new BufferedReader(reader);
-                        }
-
+                        Reader reader = new InputStreamReader(is);
+                        bfReader = new BufferedReader(reader);
                         while ((temp = bfReader.readLine()) != null) {
-                            //temp = temp.replaceAll("12 34 ","");
-                            temp = temp.substring(6);//从第6位开始截取到最后
-                            String[] str = temp.split(" ");//每行后四列数据，去掉空格
+                            temp = temp.substring(6);
+                            String[] str = temp.split(" ");
                             for (int i = 0; i < str.length; i++)
                                 strBuf.append(str[i]);
                             line++;
                             if (line % 30 == 0) // 30行* 8字节，共240byte数据时添加换行
                                 strBuf.append("\n");
-                        }is.close();
-                        //Log.e(TAG, "strBuf.toString():" + strBuf.toString());
+                        }
+                        Log.e(TAG, "strBuf.toString():" + strBuf.toString());
                     } else Log.e(TAG, "conn.getResponseCode() != 200 ");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -240,7 +258,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                     if ((k + 1) % 4 == 0) {
                         decBuf.append("\n");
                         hexBuf.append("\n");
-                    }Log.e(TAG, "dec_num[" + k + "]=" + dec_num[k]);//按个输出
+                    }
+                    Log.e(TAG, "dec_num[" + k + "]=" + dec_num[k]);//按个输出
                 }
 
                 for (int k = 0; k < 30; k++) {//k<dec_num.length
@@ -254,16 +273,6 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                     max4 = getMax(max4, c4[k]);
                     //Log.e(TAG, "c1[" + k + "]=" + c1[k]);//按列输出
                 }max = getMax(getMax(getMax(max1, max2), max3), max4);
-
-                //使用handler更新主线程UI
-                Message message = new Message();
-                message.what = UPDATE;
-                message.obj = hexBuf;
-                mHandler.sendMessage(message);
-                Message message2 = new Message();
-                message2.what = UPDATE;
-                message2.obj = decBuf;
-                mHandler.sendMessage(message2);
             }
         }).start();
         ///Hexdata.setText(hexBuf.toString());//120个十六进制数据
@@ -287,14 +296,16 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             testActivity activity = mActivity.get();
             if (activity != null) switch (msg.what) {
                 case UPDATE:
+                    Log.i(TAG, "case UPDATE:**********");
                     Hexdata.setText(hexBuf.toString());//120个十六进制数据
                     Decdata.setText(decBuf.toString());//120个十进制数据
-
                     break;
                 default:
                     break;
             }
         }
     }
-    private final MyHandler mHandler = new MyHandler(this);
+
+    private final MyHandler mHandler  = new MyHandler(this);
+    private final MyHandler mHandler2 = new MyHandler(this);
 }
