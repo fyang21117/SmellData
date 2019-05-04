@@ -261,6 +261,10 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                         mean2=getMean(c2);
                         mean3=getMean(c3);
                         mean4=getMean(c4);
+                        var1=getVar(c1,mean1);
+                        var2=getVar(c2,mean2);
+                        var3=getVar(c3,mean3);
+                        var4=getVar(c4,mean4);
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -310,6 +314,13 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         }
         mean=temp/30;
         return mean;
+    }
+    private int getVar(int a[],int mean){
+        int var=0;
+        for(int i=0;i<30;i++){
+            var=var+(a[i]-mean)*(a[i]-mean)/30;
+        }
+        return var;
     }
 
     //将 Handler 声明为静态内部类。并持有外部类的弱引用
