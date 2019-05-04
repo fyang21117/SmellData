@@ -1,12 +1,14 @@
 package com.fyang21117.smelldata;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.renderscript.ScriptGroup;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -52,34 +54,28 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public static int min1, min2, min3, min4;
     public static int max;
 
-    public              String         hex_str[] = new String[120];
-    public              int            dec_num[] = new int[120];
-    public              String         smellstr;
-    public              String[]       smelldata;
     public static       EditText       Hexdata;
     public static       EditText       Decdata;
-    private static      StringBuffer   strBuf    = new StringBuffer();
-    private static      StringBuffer   hexBuf    = new StringBuffer();
-    private static      StringBuffer   decBuf    = new StringBuffer();
+
     public static final int            UPDATE    = 1;
     public static final int            UPDATE2   = 2;
     private             BufferedReader bfReader;
     private             InputStream    is;
     private             Reader         reader;
-    private             String         temp;
+    private             String         temp="";
     int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
 
-    public static int    rawId[]   = new int[]{R.raw.smoke, R.raw.perfume0327,
+    public  int    rawId[]   = new int[]{R.raw.smoke, R.raw.perfume0327,
             R.raw.smelldata2018, R.raw.banana0329, R.raw.oilpaint190327, R.raw.orange0327,
             R.raw.orange0329, R.raw.orangepi};
-    public        String dataUrl[] = {"http://www.minija.cn/smelldata/perfume0327.txt",
+    public  String dataUrl[] = {"http://www.minija.cn/smelldata/perfume0327.txt",
             "http://www.minija.cn/smelldata/smelldata2018.txt",
             "http://www.minija.cn/smelldata/smoke.txt",
             "http://www.minija.cn/smelldata/orangepi.txt",
             "http://www.minija.cn/smelldata/orange0329.txt",
             "http://www.minija.cn/smelldata/orange0327.txt",
             "http://www.minija.cn/smelldata/banana0329.txt",
-            "http://www.minija" + ".cn/smelldata/oilpaint190327.txt"};
+            "http://www.minija.cn/smelldata/oilpaint190327.txt"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,27 +146,8 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                 else kind = 0;
                 editor.putInt("kind", kind);
                 editor.apply();
-
                 Toast.makeText(this, "当前数据path：" + dataUrl[kind], Toast.LENGTH_SHORT).show();
                 txtRead();
-                //mHandler.start();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //使用handler更新主线程UI
-                        Log.i(TAG, "sendMessage**********");
-                        Message message = new Message();
-                        message.what = UPDATE;
-                        message.obj = hexBuf.toString();
-                        mHandler.sendMessage(message);
-
-                        Log.i(TAG, "sendMessage2**********");
-                        Message message2 = new Message();
-                        message2.what = UPDATE2;
-                        message2.obj = decBuf.toString();
-                        mHandler2.sendMessage(message2);
-                    }
-                }).start();
             }
             break;
             case Menu.FIRST + 2:
@@ -187,9 +164,15 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             @Override
             public void run() {
                 try {
+                    StringBuffer   strBuf    = new StringBuffer();
+                    final StringBuffer   hexBuf    = new StringBuffer();
+                    final StringBuffer   decBuf    = new StringBuffer();
+                    String         hex_str[] = new String[120];
+                    int            dec_num[] = new int[120];
+                    String         smellstr;
+                    String[]       smelldata;
                     SharedPreferences sPref = getSharedPreferences("data", MODE_PRIVATE);
                     int num = sPref.getInt("kind", 0);
-
                     String path = dataUrl[num];
                     Log.i(TAG, "dataUrl[" + num + "]:" + path);
 
@@ -201,15 +184,16 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                     conn.setRequestMethod("GET");
                     conn.setConnectTimeout(8000);
                     conn.setReadTimeout(8000);
-                    conn.setRequestProperty("Content-type", "application/json");
+                    conn.setRequestProperty("Content-type", "application/txt");
                     conn.setInstanceFollowRedirects(false);
                     //必须设置false，否则会自动redirect到重定向后的地址
                     conn.connect();
                     if (conn.getResponseCode() == 200) {
                         //InputStream input = getResources().openRawResource(rawId[num]);
-                        is = conn.getInputStream();//??????无法更新
-                        reader = new InputStreamReader(is);
-                        bfReader = new BufferedReader(reader);
+                        InputStream is = conn.getInputStream();
+                        Reader reader = new InputStreamReader(is);
+                        BufferedReader bfReader = new BufferedReader(reader);
+                        String temp = "";
                         while ((temp = bfReader.readLine()) != null) {
                             temp = temp.substring(6);
                             String[] str = temp.split(" ");//str[4]
@@ -262,18 +246,34 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                                 Decdata.setText(decBuf.toString());//120个十进制数据
                             }
                         });
+                        if(bfReader != null) bfReader.close();
+                        if(reader != null) reader.close();
+                        if(is != null)is.close();
+                        conn.disconnect();}
+
+                    new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //使用handler更新主线程UI
+                        Log.i(TAG, "sendMessage**********");
+                        Message message = new Message();
+                        message.what = UPDATE;
+                        message.obj = hexBuf.toString();
+                        mHandler.sendMessage(message);
+
+                        Log.i(TAG, "sendMessage2**********");
+                        Message message2 = new Message();
+                        message2.what = UPDATE2;
+                        message2.obj = decBuf.toString();
+                        mHandler2.sendMessage(message2);
                     }
-                    is.close();
-                    reader.close();
-                    bfReader.close();
-                    conn.disconnect();
+                }).start();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-        //Hexdata.setText(hexBuf.toString());//120个十六进制数据
-        //Decdata.setText(decBuf.toString());//120个十进制数据
     }
 
     private int getMax(int a, int b) {
