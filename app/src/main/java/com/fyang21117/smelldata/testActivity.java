@@ -45,11 +45,30 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
     private static String TAG = testActivity.class.getSimpleName();
 
-    public static int kind = 0;
+    public static String kind = null;
+    public static int KindNum = 0;
     public static int c1[] = new int[30];
     public static int c2[] = new int[30];
     public static int c3[] = new int[30];
     public static int c4[] = new int[30];
+    public static int mean1 = 0;
+    public static int mean2 = 0;
+    public static int mean3 = 0;
+    public static int mean4 = 0;
+    public static int var1 = 0;
+    public static int var2 = 0;
+    public static int var3 = 0;
+    public static int var4 = 0;
+    public static int eigenvalue1 = 0;
+    public static int eigenvalue2 = 0;
+    public static int eigenvalue3 = 0;
+    public static int eigenvalue4 = 0;
+    public static int median1 = 0;
+    public static int median2 = 0;
+    public static int median3 = 0;
+    public static int median4 = 0;
+
+
 
     public static int min1, min2, min3, min4;
     public static int max;
@@ -59,10 +78,6 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
     public static final int            UPDATE    = 1;
     public static final int            UPDATE2   = 2;
-    private             BufferedReader bfReader;
-    private             InputStream    is;
-    private             Reader         reader;
-    private             String         temp="";
     int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
 
     public  int    rawId[]   = new int[]{R.raw.smoke, R.raw.perfume0327,
@@ -142,11 +157,11 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         switch (item.getItemId()) {
             case Menu.FIRST + 1: {
                 SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
-                if (kind < 7) kind++;
-                else kind = 0;
-                editor.putInt("kind", kind);
+                if (KindNum < 7) KindNum++;
+                else KindNum = 0;
+                editor.putInt("KindNum", KindNum);
                 editor.apply();
-                Toast.makeText(this, "当前数据path：" + dataUrl[kind], Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "当前数据path：" + dataUrl[KindNum], Toast.LENGTH_SHORT).show();
                 txtRead();
             }
             break;
@@ -172,7 +187,7 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                     String         smellstr;
                     String[]       smelldata;
                     SharedPreferences sPref = getSharedPreferences("data", MODE_PRIVATE);
-                    int num = sPref.getInt("kind", 0);
+                    int num = sPref.getInt("KindNum", 0);
                     String path = dataUrl[num];
                     Log.i(TAG, "dataUrl[" + num + "]:" + path);
 
@@ -225,7 +240,6 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                                 hexBuf.append("\n");
                             }
                         }
-
                         //Log.e(TAG, "hex_str[" + 119+ "]=" + hex_str[119]);//按个输出,right!
                         //Log.e(TAG, "dec_num[" + 119 + "]=" + dec_num[119]);//按个输出,right!
                         for (int k = 0; k < 30; k++) {//k<dec_num.length
@@ -239,6 +253,15 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                             max4 = getMax(max4, c4[k]);
                         }
                         max = getMax(getMax(getMax(max1, max2), max3), max4);
+                        median1=c1[14];
+                        median2=c2[14];
+                        median3=c3[14];
+                        median4=c4[14];
+                        mean1=getMean(c1);
+                        mean2=getMean(c2);
+                        mean3=getMean(c3);
+                        mean4=getMean(c4);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -252,22 +275,22 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
                         conn.disconnect();}
 
                     new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //使用handler更新主线程UI
-                        Log.i(TAG, "sendMessage**********");
-                        Message message = new Message();
-                        message.what = UPDATE;
-                        message.obj = hexBuf.toString();
-                        mHandler.sendMessage(message);
+                        @Override
+                        public void run() {
+                            //使用handler更新主线程UI
+                            Log.i(TAG, "sendMessage**********");
+                            Message message = new Message();
+                            message.what = UPDATE;
+                            message.obj = hexBuf.toString();
+                            mHandler.sendMessage(message);
 
-                        Log.i(TAG, "sendMessage2**********");
-                        Message message2 = new Message();
-                        message2.what = UPDATE2;
-                        message2.obj = decBuf.toString();
-                        mHandler2.sendMessage(message2);
-                    }
-                }).start();
+                            Log.i(TAG, "sendMessage2**********");
+                            Message message2 = new Message();
+                            message2.what = UPDATE2;
+                            message2.obj = decBuf.toString();
+                            mHandler2.sendMessage(message2);
+                        }
+                    }).start();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -279,6 +302,14 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     private int getMax(int a, int b) {
         if (a < b) return b;
         else return a;
+    }
+    private int getMean(int a[]){
+        int mean,temp=0;
+        for(int i=0;i<30;i++){
+            temp=temp+a[i];
+        }
+        mean=temp/30;
+        return mean;
     }
 
     //将 Handler 声明为静态内部类。并持有外部类的弱引用

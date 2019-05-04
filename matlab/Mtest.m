@@ -53,7 +53,7 @@ if mean(initdata(:,1))>160
         end
 end
 
-    % Ô¤´¦Àí
+
     meantestdata1=mean(initdata(1:10,1:3));
     meantestdata2=mean(initdata(11:20,1:3));
     meantestdata3=mean(initdata(21:30,1:3));
@@ -90,7 +90,7 @@ end
     input_data2=[meantestdata2,feature_first2,feature_second2,feature_fourth2]';
     input_data3=[meantestdata3,feature_first3,feature_second3,feature_fourth3]';
 
-% ·ÂÕæ
+
     y11=sim(net12,input_data1);
     y21=sim(net22,input_data1);
     y31=sim(net32,input_data1);
@@ -126,7 +126,7 @@ end
     [~,kind33]=max(y33);
     [~,kind43]=max(y43);
     [~,kind53]=max(y53);
-% Í¶Æ±
+
     kq=0;
     xs=0;
     jp=0;
@@ -171,7 +171,7 @@ end
         if xs==0 & jp==0 & yq==0
             target=1;
         end
-%½á¹û×ª»¯
+%ï¿½ï¿½ï¿½×ªï¿½ï¿½
 if target==1
    kind='0x00';
 else
@@ -186,7 +186,7 @@ else
 end
 end
 end
-% Å¨¶È·Ö¼¶
+% Å¨ï¿½È·Ö¼ï¿½
 data=mean(initdata);
 
 if strcmp(kind,'0x00')

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -184,9 +185,8 @@ public class ChartsActivity extends Activity {
         @Override
         public void onClick(View view) {
             //mCharts[mSelected].zoomOut();
-            //Toast.makeText(ChartsActivity.this,"努力放大中",Toast.LENGTH_SHORT).show();
-            //testActivity.actionStart(ChartsActivity.this);
             finish();
         }
     }
+
 }
