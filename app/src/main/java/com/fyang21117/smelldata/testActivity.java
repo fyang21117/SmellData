@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -67,22 +68,16 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     public static int median2 = 0;
     public static int median3 = 0;
     public static int median4 = 0;
-
-
-
     public static int min1, min2, min3, min4;
     public static int max;
 
-    public static       EditText       Hexdata;
-    public static       EditText       Decdata;
+    public static EditText Hexdata;
+    public static EditText Decdata;
 
     public static final int            UPDATE    = 1;
     public static final int            UPDATE2   = 2;
     int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
 
-    public  int    rawId[]   = new int[]{R.raw.smoke, R.raw.perfume0327,
-            R.raw.smelldata2018, R.raw.banana0329, R.raw.oilpaint190327, R.raw.orange0327,
-            R.raw.orange0329, R.raw.orangepi};
     public  String dataUrl[] = {"http://www.minija.cn/smelldata/perfume0327.txt",
             "http://www.minija.cn/smelldata/smelldata2018.txt",
             "http://www.minija.cn/smelldata/smoke.txt",
@@ -178,19 +173,21 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    StringBuffer   strBuf    = new StringBuffer();
-                    final StringBuffer   hexBuf    = new StringBuffer();
-                    final StringBuffer   decBuf    = new StringBuffer();
-                    String         hex_str[] = new String[120];
-                    int            dec_num[] = new int[120];
-                    String         smellstr;
-                    String[]       smelldata;
-                    SharedPreferences sPref = getSharedPreferences("data", MODE_PRIVATE);
-                    int num = sPref.getInt("KindNum", 0);
-                    String path = dataUrl[num];
-                    Log.i(TAG, "dataUrl[" + num + "]:" + path);
 
+                String hex_str[] = new String[120];
+                int dec_num[] = new int[120];
+                String smellstr;
+                String[] smelldata;
+                StringBuffer strBuf = new StringBuffer();
+                final StringBuffer hexBuf = new StringBuffer();
+                final StringBuffer decBuf = new StringBuffer();
+
+                SharedPreferences sPref = getSharedPreferences("data", MODE_PRIVATE);
+                int num = sPref.getInt("KindNum", 0);
+                String path = dataUrl[num];
+                Log.i(TAG, "dataUrl[" + num + "]:" + path);
+
+                try {
                     HttpURLConnection conn;
                     URL url = new URL(path);
                     conn = (HttpURLConnection) url.openConnection();
