@@ -1,14 +1,11 @@
 package com.fyang21117.smelldata;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.renderscript.ScriptGroup;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,33 +15,25 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-public class testActivity extends AppCompatActivity implements OnItemClickListener,
+public class MainActivity extends AppCompatActivity implements OnItemClickListener,
         View.OnClickListener {
     public static void actionStart(Context context) {
-        Intent intent = new Intent(context, testActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         context.startActivity(intent);
     }
 
-    private static String TAG = testActivity.class.getSimpleName();
+    private static String TAG = MainActivity.class.getSimpleName();
 
     public static String kind = null;
     public static int KindNum = 0;
@@ -90,13 +79,14 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_main);
         setTitle("气味数据显示");
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(false);
 
-        findViewById(R.id.b1).setOnClickListener(testActivity.this);
-        findViewById(R.id.b2).setOnClickListener(testActivity.this);
+        findViewById(R.id.b1).setOnClickListener(MainActivity.this);
+        findViewById(R.id.b2).setOnClickListener(MainActivity.this);
+        findViewById(R.id.b3).setOnClickListener(MainActivity.this);
         Hexdata = findViewById(R.id.Hexdata);
         Decdata = findViewById(R.id.Decdata);
         txtRead();
@@ -111,17 +101,20 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
             case R.id.b1: {
                 Log.e(TAG, "*************折线图LineChart01View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[0]);
-                intent.setClass(testActivity.this, ChartsActivity.class);
+                intent.setClass(MainActivity.this, ChartsActivity.class);
                 bundleSimple.putInt("selected", 0);
             }
             break;
             case R.id.b2: {
                 Log.e(TAG, "*************曲线图SplineChart03View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[1]);
-                intent.setClass(testActivity.this, ChartsActivity.class);
+                intent.setClass(MainActivity.this, ChartsActivity.class);
                 bundleSimple.putInt("selected", 1);
             }
             break;
+            case R.id.b3:{
+                TestActivity.actionStart(this);
+            }break;
             default:
                 break;
         }
@@ -322,15 +315,15 @@ public class testActivity extends AppCompatActivity implements OnItemClickListen
 
     //将 Handler 声明为静态内部类。并持有外部类的弱引用
     private static class MyHandler extends Handler {
-        private final WeakReference<testActivity> mActivity;
+        private final WeakReference<MainActivity> mActivity;
 
-        public MyHandler(testActivity activity) {
+        public MyHandler(MainActivity activity) {
             mActivity = new WeakReference<>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            testActivity activity = mActivity.get();
+            MainActivity activity = mActivity.get();
             if (activity != null) switch (msg.what) {
                 case UPDATE:
                     Log.i(TAG, "case UPDATE:**********");

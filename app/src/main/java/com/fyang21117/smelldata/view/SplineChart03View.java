@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.fyang21117.smelldata.ChartsActivity;
 import com.fyang21117.smelldata.view.chart.CustomLineData;
 import com.fyang21117.smelldata.view.chart.PointD;
 import com.fyang21117.smelldata.view.chart.SplineChart;
@@ -24,11 +23,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.fyang21117.smelldata.testActivity.max;
-import static com.fyang21117.smelldata.testActivity.c1;
-import static com.fyang21117.smelldata.testActivity.c2;
-import static com.fyang21117.smelldata.testActivity.c3;
-import static com.fyang21117.smelldata.testActivity.c4;
+import static com.fyang21117.smelldata.MainActivity.max;
+import static com.fyang21117.smelldata.MainActivity.c1;
+import static com.fyang21117.smelldata.MainActivity.c2;
+import static com.fyang21117.smelldata.MainActivity.c3;
+import static com.fyang21117.smelldata.MainActivity.c4;
 
 public class SplineChart03View extends DemoView {
 

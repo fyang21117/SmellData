@@ -1,29 +1,27 @@
 package com.fyang21117.smelldata;
 
-import android.util.Log;
-
 public class DataHandling {
-    public static int c1[] = testActivity.c1;
-    public static int c2[] = testActivity.c2;
-    public static int c3[] = testActivity.c3;
-    public static int c4[] = testActivity.c4;
-    public static int max=testActivity.max;
-    public static String kind=testActivity.kind;
-    public static int mean1 = testActivity.mean1;
-    public static int mean2 = testActivity.mean2;
-    public static int mean3 = testActivity.mean3;
-    public static int mean4 = testActivity.mean4;
-    public static int var1 = testActivity.var1;
-    public static int var2 = testActivity.var2;
-    public static int var3 = testActivity.var3;
-    public static int var4 = testActivity.var4;
-    public static int eigenvalue1 = testActivity.eigenvalue1;
-    public static int eigenvalue2 = testActivity.eigenvalue2;
-    public static int eigenvalue3 = testActivity.eigenvalue3;
-    public static int eigenvalue4 = testActivity.eigenvalue4;
-    public static int median1 = testActivity.median1;
-    public static int median2 = testActivity.median2;
-    public static int median3 = testActivity.median3;
-    public static int median4 = testActivity.median4;
+    public static int c1[] = MainActivity.c1;
+    public static int c2[] = MainActivity.c2;
+    public static int c3[] = MainActivity.c3;
+    public static int c4[] = MainActivity.c4;
+    public static int max= MainActivity.max;
+    public static String kind= MainActivity.kind;
+    public static int mean1 = MainActivity.mean1;
+    public static int mean2 = MainActivity.mean2;
+    public static int mean3 = MainActivity.mean3;
+    public static int mean4 = MainActivity.mean4;
+    public static int var1 = MainActivity.var1;
+    public static int var2 = MainActivity.var2;
+    public static int var3 = MainActivity.var3;
+    public static int var4 = MainActivity.var4;
+    public static int eigenvalue1 = MainActivity.eigenvalue1;
+    public static int eigenvalue2 = MainActivity.eigenvalue2;
+    public static int eigenvalue3 = MainActivity.eigenvalue3;
+    public static int eigenvalue4 = MainActivity.eigenvalue4;
+    public static int median1 = MainActivity.median1;
+    public static int median2 = MainActivity.median2;
+    public static int median3 = MainActivity.median3;
+    public static int median4 = MainActivity.median4;
 
 }

@@ -6,27 +6,22 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
-import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.fyang21117.smelldata.ChartsActivity;
-import com.fyang21117.smelldata.testActivity;
 import com.fyang21117.smelldata.view.chart.LineChart;
 import com.fyang21117.smelldata.view.chart.LineData;
 import com.fyang21117.smelldata.view.event.click.PointPosition;
 import com.fyang21117.smelldata.view.renderer.XEnum;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 
-import static com.fyang21117.smelldata.testActivity.max;
-import static com.fyang21117.smelldata.testActivity.c1;
-import static com.fyang21117.smelldata.testActivity.c2;
-import static com.fyang21117.smelldata.testActivity.c3;
-import static com.fyang21117.smelldata.testActivity.c4;
+import static com.fyang21117.smelldata.MainActivity.max;
+import static com.fyang21117.smelldata.MainActivity.c1;
+import static com.fyang21117.smelldata.MainActivity.c2;
+import static com.fyang21117.smelldata.MainActivity.c3;
+import static com.fyang21117.smelldata.MainActivity.c4;
 
 public class LineChart01View extends DemoView {
 	//折线图（封闭式）
