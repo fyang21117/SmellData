@@ -85,7 +85,7 @@ public class LineView extends View {
     PathMeasure mMeasure3;
 
     // 默认的动效周期 10s
-     final int DEFAULTDURATION = 15000;
+     final int DEFAULTDURATION = 10000;
 
     //下标日期的列表
     private LinkedList<Integer> mDates = new LinkedList<>();
@@ -137,7 +137,7 @@ public class LineView extends View {
         initPath();
 
         //下标
-        int temp = 1;
+        int temp = 0;
         for (int i = 0; i < c1.length; i++) {
             mDates.add(temp);
             temp += 1;
@@ -170,7 +170,7 @@ public class LineView extends View {
         mL2Paint.setStrokeWidth(4f);
 
         mL3Paint = new Paint();
-        mL3Paint.setColor(Color.YELLOW);
+        mL3Paint.setColor(Color.BLUE);
         mL3Paint.setAntiAlias(true);
         mL3Paint.setStyle(Paint.Style.STROKE);
         mL3Paint.setStrokeWidth(4f);
@@ -247,9 +247,11 @@ public class LineView extends View {
 
         mViewHeight = h;
         mViewWidth = w;
-        XLong = mViewWidth;
-        YLong = mViewHeight / 9 * 8;//Y大概占总长度的三分之一
-        //XLong = mViewWidth-marginLeft-marginRight;
+        marginLeft=mViewWidth/20;
+
+        //XLong = mViewWidth;
+        YLong = mViewHeight / 10 * 9;//Y大概占总长度的三分之一
+        XLong = mViewWidth-marginLeft-marginRight;
         //YLong = mViewHeight/3*2;//Y大概占总长度的三分之一
         mDistance = XLong / 30;
 
@@ -341,7 +343,13 @@ public class LineView extends View {
         canvas.drawLine(startX, (float)(mViewHeight - YLong / 30), startX + XLong,
                 (float)(mViewHeight - YLong / 30), mXYPaint);
         int distanceTemp = 0;
-        int textDistanceTemp = 0;
+        int textDistanceTemp = startX;
+        int coltxtDistance = 0;
+
+        for (int i = 0; i < MAX/10; i++) {
+            canvas.drawText( i+ "", 0, coltxtDistance, mTextPaint);
+            coltxtDistance += 10;
+        }
 
         //纵坐标Y 坐标轴横坐标的起始点为marginLeft，纵坐标为marginLeft，暂时选取这两个值，横坐标的终值为marginLeft+XLong
         for (int i = 0; i < 30; i++) {
@@ -356,6 +364,8 @@ public class LineView extends View {
             canvas.drawText(mDates.get(i) + "", textDistanceTemp, mViewHeight, mTextPaint);
             textDistanceTemp += mDistance;
         }
+
+
     }
 
     private void drawLinePath0(Canvas canvas) {
