@@ -119,8 +119,7 @@ public class ChartsActivity extends Activity {
         //完全动态创建,无须XML文件.
         framelayout = new FrameLayout(this);
         FrameLayout.LayoutParams frameParm =
-                new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT);//LayoutParams(width,height)
+                new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         frameParm.gravity = Gravity.BOTTOM | Gravity.RIGHT;
 
         //缩放控件放置在FrameLayout的上层，用于放大缩小图表

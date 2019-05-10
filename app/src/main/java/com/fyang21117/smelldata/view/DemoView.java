@@ -1,6 +1,7 @@
 package com.fyang21117.smelldata.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import com.fyang21117.smelldata.view.common.DensityUtil;
 
@@ -40,7 +41,9 @@ public class DemoView extends ChartView{
 		ltrb[3] = DensityUtil.dip2px(getContext(), 20); //bottom						
 		return ltrb;
 	}
-		
+    @Override
+    public void onDraw(Canvas canvas) {
+        super.onDraw(canvas);}
 	@Override  
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {  
         super.onSizeChanged(w, h, oldw, oldh);

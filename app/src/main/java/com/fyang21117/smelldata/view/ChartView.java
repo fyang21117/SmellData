@@ -31,7 +31,9 @@ public abstract class ChartView extends GraphicalView {
         super(context, attrs, defStyle);
 
     }
-
+    @Override
+    public void onDraw(Canvas canvas) {
+        super.onDraw(canvas);}
     @Override
     public void render(Canvas canvas) {    }
 

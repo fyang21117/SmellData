@@ -1,5 +1,6 @@
 package com.fyang21117.smelldata;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -113,7 +114,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
             break;
             case R.id.b3:{
-                TestActivity.actionStart(this);
+                intent.setClass(MainActivity.this, TestActivity.class);
+                bundleSimple.putIntArray("c1", c1);//保存int类型数组，在txtRead已经转换类型
+                bundleSimple.putIntArray("c2", c2);
+                bundleSimple.putIntArray("c3", c3);
+                bundleSimple.putIntArray("c4", c4);
+                bundleSimple.putInt("max", max);
+                intent.putExtras(bundleSimple);
+                startActivity(intent);
             }break;
             default:
                 break;
