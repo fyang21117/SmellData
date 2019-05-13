@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }).start();
     }
 
-    private int getMax(int a, int b) {
+    private  int getMax(int a, int b) {
         if (a < b) return b;
         else return a;
     }

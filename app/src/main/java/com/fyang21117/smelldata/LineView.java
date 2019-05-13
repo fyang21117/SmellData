@@ -20,7 +20,7 @@ import static com.fyang21117.smelldata.MainActivity.c1;
 import static com.fyang21117.smelldata.MainActivity.c2;
 import static com.fyang21117.smelldata.MainActivity.c3;
 import static com.fyang21117.smelldata.MainActivity.c4;
-import static com.fyang21117.smelldata.MainActivity.max;
+
 
 public class LineView extends View {
     private String TAG = "lineview";
@@ -45,13 +45,13 @@ public class LineView extends View {
      int mViewHeight;
 
     //左右的间距
-     int marginLeft, marginRight;
+     int marginLeft, marginRight,marginBottom;
 
     //坐标轴的X,Y总长度
     private int XLong, YLong;
 
     //坐标轴两个点之间的间距
-    private int mDistance;
+    private int mDistance,mcolDis;
 
     //直线path的起始点
      int mLineStartX;
@@ -88,7 +88,9 @@ public class LineView extends View {
      final int DEFAULTDURATION = 10000;
 
     //下标日期的列表
-    private LinkedList<Integer> mDates = new LinkedList<>();
+    private LinkedList<Integer> x_axis = new LinkedList<>();
+    private LinkedList<Integer> y_axis = new LinkedList<>();
+
 
     private boolean doAnimation = false;
 
@@ -117,7 +119,6 @@ public class LineView extends View {
 
     public LineView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Log.e(TAG, "LineView start*******");
         marginLeft = UiUtils.dipToPx(context, 10);
         marginRight = UiUtils.dipToPx(context, 7);
 
@@ -137,10 +138,16 @@ public class LineView extends View {
         initPath();
 
         //下标
-        int temp = 0;
+        int temp = 0,t0=100;
         for (int i = 0; i < c1.length; i++) {
-            mDates.add(temp);
+            x_axis.add(temp);
             temp += 1;
+        }
+        for(int i=0;i<10;i++){
+
+            y_axis.add(t0);
+            t0=t0-10;
+
         }
 
         pos = new float[2];
@@ -182,7 +189,7 @@ public class LineView extends View {
         mXYPaint = new Paint();
         mXYPaint.setColor(Color.GRAY);
         mXYPaint.setStyle(Paint.Style.FILL);
-        mXYPaint.setStrokeWidth(2f);
+        mXYPaint.setStrokeWidth(1f);
 
         mNumPaint = new Paint();
         mNumPaint.setColor(Color.BLACK);
@@ -243,18 +250,18 @@ public class LineView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);//当屏幕大小改变时绘制.
-        Log.e(TAG, "onSizeChanged() start*******");
 
         mViewHeight = h;
         mViewWidth = w;
-        marginLeft=mViewWidth/20;
+        marginLeft=mViewWidth/30;
+        marginBottom=mViewHeight/10;
 
         //XLong = mViewWidth;
-        YLong = mViewHeight / 10 * 9;//Y大概占总长度的三分之一
+        //YLong = mViewHeight / 10 * 9;//Y大概占总长度的三分之一
         XLong = mViewWidth-marginLeft-marginRight;
-        //YLong = mViewHeight/3*2;//Y大概占总长度的三分之一
+        YLong = mViewHeight/100*95;//Y大概占总长度的三分之一
         mDistance = XLong / 30;
-
+        mcolDis=YLong/10;
         //linePath0.moveTo(marginLeft,mViewHeight-YLong/6);
 
         for (int i = 0; i < 30; i++) {
@@ -263,6 +270,8 @@ public class LineView extends View {
             arrInt2.add((double) c3[i]);
             arrInt3.add((double) c4[i]);
         }
+        //MAX = getMax(getMax(getMax(max1, max2), max3), max4);
+
         //动画起始入口
         addAndFormat(arrInt0, arrInt1, arrInt2, arrInt3);
     }
@@ -270,7 +279,7 @@ public class LineView extends View {
     //把输入进来的值标准化为Y坐标
     public void addAndFormat(LinkedList<Double> data0, LinkedList<Double> data1,
                              LinkedList<Double> data2, LinkedList<Double> data3) {
-         MAX=max;
+        MAX=100;
         //max0 = Collections.max(data0);
         //lastNum = data0.get(data0.size() - 1);
         for (int i = 0; i < data0.size(); i++) {
@@ -340,32 +349,39 @@ public class LineView extends View {
     private void drawNet(Canvas canvas) {
         //横坐标X
         int startX = marginLeft;
-        canvas.drawLine(startX, (float)(mViewHeight - YLong / 30), startX + XLong,
+        int startY = marginBottom;
+        canvas.drawLine(startX, (float)(mViewHeight - YLong / 30), startX+ XLong,
                 (float)(mViewHeight - YLong / 30), mXYPaint);
-        int distanceTemp = 0;
-        int textDistanceTemp = startX;
-        int coltxtDistance = 0;
 
-        for (int i = 0; i < MAX/10; i++) {
-            canvas.drawText( i+ "", 0, coltxtDistance, mTextPaint);
-            coltxtDistance += 10;
-        }
+        int rawDis = 0;
+        int textDistanceTemp = startX;
+        int colDis = 0;
+        int colTxt = startY;
+
 
         //纵坐标Y 坐标轴横坐标的起始点为marginLeft，纵坐标为marginLeft，暂时选取这两个值，横坐标的终值为marginLeft+XLong
         for (int i = 0; i < 30; i++) {
-            canvas.drawLine(startX + distanceTemp, (float)(mViewHeight - YLong / 30),
-                    startX + distanceTemp, mViewHeight - YLong, mXYPaint);
-            distanceTemp += mDistance;
+            canvas.drawLine(startX + rawDis, (float)(mViewHeight - YLong / 30),
+                    startX + rawDis, mViewHeight - YLong, mXYPaint);
+            rawDis += mDistance;
+        }
+
+        for (int i = 0; i < 10; i++) {
+            canvas.drawLine((float)(mViewWidth - XLong /10), startY + colDis,
+                   (float)(mViewWidth - XLong), startY + colDis, mXYPaint);
+            colDis += mcolDis;
         }
         //把直线起始点定位为坐标轴的原点
         mLineStartX = marginLeft;
 
-        for (int i = 0; i < mDates.size(); i++) {
-            canvas.drawText(mDates.get(i) + "", textDistanceTemp, mViewHeight, mTextPaint);
+        for (int i = 0; i < x_axis.size(); i++) {
+            canvas.drawText(x_axis.get(i) + "", textDistanceTemp, mViewHeight, mTextPaint);
             textDistanceTemp += mDistance;
         }
-
-
+        for (int i = 0; i <10; i++) {
+            canvas.drawText(y_axis.get(i) + "",0,colTxt,  mTextPaint);
+            colTxt += mcolDis;
+        }
     }
 
     private void drawLinePath0(Canvas canvas) {
@@ -434,8 +450,7 @@ public class LineView extends View {
 
     //下面的日期
     public void addDate(LinkedList<Integer> dates) {
-        mDates = dates;
+        x_axis = dates;
         invalidate();
     }
-
 }
