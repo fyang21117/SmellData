@@ -69,7 +69,7 @@ public class LineChart01View extends DemoView {
 
         //綁定手势滑动事件
         this.bindTouch(this,chart);
-        Log.e("曲线图:c2.toString():",String.valueOf(c2[1]));
+
         chart.disableScale();//禁止缩放
         chart.enablePanMode();//激活平移
     }
@@ -78,9 +78,7 @@ public class LineChart01View extends DemoView {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         chart.setChartRange(w,h);//图所占范围大小
-
     }
-
 
 
     private void chartRender() {

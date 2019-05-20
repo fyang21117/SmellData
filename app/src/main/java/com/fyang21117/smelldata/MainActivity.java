@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 String hex_str[] = new String[120];
                 int dec_num[] = new int[120];
                 String smellstr;
