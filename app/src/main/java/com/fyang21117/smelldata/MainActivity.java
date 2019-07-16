@@ -68,14 +68,24 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     public static final int            UPDATE2   = 2;
     int line = 0, max1 = 0, max2 = 0, max3 = 0, max4 = 0;
 
-    public  String dataUrl[] = {"http://www.minija.cn/smelldata/perfume0327.txt",
+/*    public  String dataUrl[] = {"http://www.minija.cn/smelldata/perfume0327.txt",
             "http://www.minija.cn/smelldata/smelldata2018.txt",
             "http://www.minija.cn/smelldata/smoke.txt",
             "http://www.minija.cn/smelldata/orangepi.txt",
             "http://www.minija.cn/smelldata/orange0329.txt",
             "http://www.minija.cn/smelldata/orange0327.txt",
             "http://www.minija.cn/smelldata/banana0329.txt",
-            "http://www.minija.cn/smelldata/oilpaint190327.txt"};
+            "http://www.minija.cn/smelldata/oilpaint190327.txt"};*/
+
+    public  String dataUrl[] = {"http://192.168.11.38:8080/perfume0327.txt",
+            "http://192.168.11.38:8080/smelldata2018.txt",
+            "http://192.168.11.38:8080/smoke.txt",
+            "http://192.168.11.38:8080/orangepi.txt",
+            "http://192.168.11.38:8080/orange0329.txt",
+            "http://192.168.11.38:8080/orange0327.txt",
+            "http://192.168.11.38:8080/banana0329.txt",
+            "http://192.168.11.38:8080/oilpaint190327.txt"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 bundleSimple.putInt("selected", 0);
             }
             break;
+
             case R.id.b2: {
                 Log.e(TAG, "*************曲线图SplineChart03View start*************");
                 bundleSimple.putString("title", chartsTitleCurr[1]);
@@ -113,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 bundleSimple.putInt("selected", 1);
             }
             break;
+
             case R.id.b3:{
                 intent.setClass(MainActivity.this, TestActivity.class);
                 bundleSimple.putIntArray("c1", c1);//保存int类型数组，在txtRead已经转换类型
@@ -123,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 intent.putExtras(bundleSimple);
                 startActivity(intent);
             }break;
+
             default:
                 break;
         }
@@ -144,23 +157,24 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    }
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case Menu.FIRST + 1: {
+                //update data
                 SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
                 if (KindNum < 7) KindNum++;
-                else KindNum = 0;
+                else
+                    KindNum = 0;
                 editor.putInt("KindNum", KindNum);
                 editor.apply();
                 //Toast.makeText(this, "当前数据path：" + dataUrl[KindNum], Toast.LENGTH_SHORT).show();
                 txtRead();
-            }
-            break;
+            }break;
+
             case Menu.FIRST + 2:
                 Toast.makeText(this, "about", Toast.LENGTH_SHORT).show();
                 break;
@@ -199,7 +213,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     conn.setRequestProperty("Content-type", "application/txt");
                     conn.setInstanceFollowRedirects(false);
                     //必须设置false，否则会自动redirect到重定向后的地址
+                    Log.i(TAG, "conn.connect()之前" );
                     conn.connect();
+                    Log.i(TAG, "conn.connect()之后" );
+
                     if (conn.getResponseCode() == 200) {
                         //InputStream input = getResources().openRawResource(rawId[num]);
                         InputStream is = conn.getInputStream();
