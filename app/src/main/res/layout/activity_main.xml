@@ -47,6 +47,14 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/b4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="气味检测"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <LinearLayout

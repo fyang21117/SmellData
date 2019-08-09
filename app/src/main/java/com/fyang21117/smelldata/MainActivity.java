@@ -77,15 +77,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             "http://www.minija.cn/smelldata/banana0329.txt",
             "http://www.minija.cn/smelldata/oilpaint190327.txt"};*/
 
-    public  String dataUrl[] = {"http://192.168.11.38:8080/perfume0327.txt",
+    public  String dataUrl[] = {
             "http://192.168.11.38:8080/smelldata2018.txt",
             "http://192.168.11.38:8080/smoke.txt",
             "http://192.168.11.38:8080/orangepi.txt",
-            "http://192.168.11.38:8080/orange0329.txt",
             "http://192.168.11.38:8080/orange0327.txt",
+            "http://192.168.11.38:8080/perfume0327.txt",
             "http://192.168.11.38:8080/banana0329.txt",
+            "http://192.168.11.38:8080/orange0329.txt",
             "http://192.168.11.38:8080/oilpaint190327.txt"};
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         findViewById(R.id.b1).setOnClickListener(MainActivity.this);
         findViewById(R.id.b2).setOnClickListener(MainActivity.this);
         findViewById(R.id.b3).setOnClickListener(MainActivity.this);
+        findViewById(R.id.b4).setOnClickListener(MainActivity.this);
         Hexdata = findViewById(R.id.Hexdata);
         Decdata = findViewById(R.id.Decdata);
         txtRead();
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 startActivity(intent);
             }break;
 
+            case R.id.b4:{DebugActivity.actionStart(this);}
             default:
                 break;
         }
@@ -166,7 +168,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             case Menu.FIRST + 1: {
                 //update data
                 SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
-                if (KindNum < 7) KindNum++;
+                if (KindNum < 7)
+                    KindNum++;
                 else
                     KindNum = 0;
                 editor.putInt("KindNum", KindNum);
@@ -267,18 +270,18 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             max4 = getMax(max4, c4[k]);
                         }
                         max = getMax(getMax(getMax(max1, max2), max3), max4);
-                        median1=c1[14];
-                        median2=c2[14];
-                        median3=c3[14];
-                        median4=c4[14];
-                        mean1=getMean(c1);
-                        mean2=getMean(c2);
-                        mean3=getMean(c3);
-                        mean4=getMean(c4);
-                        var1=getVar(c1,mean1);
-                        var2=getVar(c2,mean2);
-                        var3=getVar(c3,mean3);
-                        var4=getVar(c4,mean4);
+                        median1 = c1[14];
+                        median2 = c2[14];
+                        median3 = c3[14];
+                        median4 = c4[14];
+                        mean1 = getMean(c1);
+                        mean2 = getMean(c2);
+                        mean3 = getMean(c3);
+                        mean4 = getMean(c4);
+                        var1 = getVar(c1,mean1);
+                        var2 = getVar(c2,mean2);
+                        var3 = getVar(c3,mean3);
+                        var4 = getVar(c4,mean4);
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -288,8 +291,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             }
                         });
                         if(bfReader != null) bfReader.close();
-                        if(reader != null) reader.close();
-                        if(is != null)is.close();
+                        if(reader != null)   reader.close();
+                        if(is != null)       is.close();
                         conn.disconnect();}
 
                     new Thread(new Runnable() {
@@ -319,20 +322,22 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     private  int getMax(int a, int b) {
         if (a < b) return b;
-        else return a;
+        else       return a;
     }
+
     private int getMean(int a[]){
-        int mean,temp=0;
-        for(int i=0;i<30;i++){
-            temp=temp+a[i];
+        int mean,temp = 0;
+        for(int i = 0;i < 30;i++){
+            temp = temp + a[i];
         }
-        mean=temp/30;
+        mean = temp/30;
         return mean;
     }
+
     private int getVar(int a[],int mean){
-        int var=0;
-        for(int i=0;i<30;i++){
-            var=var+(a[i]-mean)*(a[i]-mean)/30;
+        int var = 0;
+        for(int i = 0;i < 30;i++){
+            var = var+(a[i]-mean)*(a[i]-mean)/30;
         }
         return var;
     }
@@ -348,12 +353,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         @Override
         public void handleMessage(Message msg) {
             MainActivity activity = mActivity.get();
-            if (activity != null) switch (msg.what) {
-                case UPDATE:
+            if (activity != null)
+                switch (msg.what) {
+                    case UPDATE:
                     Log.i(TAG, "case UPDATE:**********");
                     Hexdata.setText(msg.obj.toString());//120个十六进制数据
                     break;
-                case UPDATE2:
+
+                    case UPDATE2:
                     Log.i(TAG, "case UPDATE2:**********");
                     Decdata.setText(msg.obj.toString());//120个十进制数据
                     break;
