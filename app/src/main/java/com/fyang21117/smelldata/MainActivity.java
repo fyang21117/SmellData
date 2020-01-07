@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             "http://www.minija.cn/smelldata/oilpaint190327.txt"};*/
 
     public  String dataUrl[] = {
-            "http://192.168.11.38:8080/smelldata2018.txt",
+            //apache服务器已过期
+            "http://192.168.11.38/smelldata2018.txt",
             "http://192.168.11.38:8080/smoke.txt",
             "http://192.168.11.38:8080/orangepi.txt",
             "http://192.168.11.38:8080/orange0327.txt",

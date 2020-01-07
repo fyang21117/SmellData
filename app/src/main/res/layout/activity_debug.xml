@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/liulian"/>
+            android:background="@drawable/xiangyan"/>
 
         <TextView
             android:id="@+id/kind"
@@ -37,7 +37,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginLeft="25dp"
             android:layout_marginBottom="30dp"
-            android:text="榴莲"
+            android:text="香烟"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -60,7 +60,7 @@
             android:textSize="20sp"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
-            android:text="良"/>
+            android:text="极差"/>
 
         <TextView
             android:layout_width="wrap_content"

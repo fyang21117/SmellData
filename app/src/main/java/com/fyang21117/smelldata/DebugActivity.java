@@ -20,5 +20,13 @@ public class DebugActivity extends AppCompatActivity {
         setTitle("气体传感");
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
+        /**
+         * 2020年1月3日10:23:56
+         * 插入使用Mtest.jar文件，进行计算，返回气味识别结果。
+         *
+         * */
+
+
     }
 }
